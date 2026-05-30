@@ -3,2411 +3,1300 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MakeCV AI — Professional Resume Builder</title>
-<meta name="description" content="Build a world-class CV in 1 minute with AI. Upload documents, get instant professional resume.">
-<meta property="og:title" content="MakeCV AI — Build Your CV in 1 Minute">
-<meta property="og:description" content="AI-powered CV builder. Upload your documents, get a professional resume instantly.">
+<title>MakeCV AI — Professional CV Builder</title>
+<meta name="theme-color" content="#ffffff">
 <link rel="manifest" href="manifest.json">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
 <style>
-:root {
-  --bg: #0f0f13;
-  --surface: #17171f;
-  --surface2: #1e1e28;
-  --border: #2a2a38;
-  --accent: #6c63ff;
-  --accent2: #ff6584;
-  --text: #e8e8f0;
-  --text2: #9090a8;
-  --text3: #5a5a72;
-  --success: #4caf7d;
-  --warning: #ffb347;
-  --radius: 14px;
-  --sidebar: 280px;
+:root{
+  --bg:#f5f6fa;
+  --white:#ffffff;
+  --s1:#f8f9fc;
+  --s2:#eef0f7;
+  --b1:#e2e4ed;
+  --b2:#d0d3e0;
+  --a1:#5b5ef4;
+  --a2:#e8445a;
+  --a3:#22c55e;
+  --t1:#1a1a2e;
+  --t2:#4a4a6a;
+  --t3:#9090b0;
+  --warn:#f59e0b;
+  --r:8px;
+  --sw:220px;
+  --ribbon:44px;
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.06);
+  --shadow-md:0 4px 16px rgba(0,0,0,.1);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;overflow-x:hidden;font-size:13px;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--s1);}
+::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px;}
+::-webkit-scrollbar-thumb:hover{background:var(--t3);}
+
+/* ===== APP SHELL ===== */
+#app{display:grid;grid-template-rows:var(--ribbon) 36px 1fr;grid-template-columns:var(--sw) 1fr 360px;height:100vh;overflow:hidden;}
+
+/* ===== TITLE BAR ===== */
+#titlebar{
+  grid-column:1/-1;
+  background:var(--a1);
+  display:flex;align-items:center;
+  padding:0 12px;gap:4px;
+  user-select:none;
+}
+.tb-logo{
+  display:flex;align-items:center;gap:7px;
+  padding:0 8px 0 0;margin-right:4px;
+  border-right:1px solid rgba(255,255,255,.2);
+}
+.tb-logo-txt{
+  font-family:'Playfair Display',serif;
+  font-size:.95rem;font-weight:700;color:#fff;
+}
+.tb-logo-sub{font-size:.55rem;color:rgba(255,255,255,.7);font-weight:500;letter-spacing:.5px;}
+.tb-menu{display:flex;align-items:center;gap:0;}
+.tb-menu-item{
+  padding:6px 12px;font-size:.72rem;color:rgba(255,255,255,.85);
+  cursor:pointer;border-radius:4px;transition:all .15s;
+  font-weight:500;
+}
+.tb-menu-item:hover{background:rgba(255,255,255,.15);color:#fff;}
+.tb-menu-item.active{background:rgba(255,255,255,.2);color:#fff;}
+.tb-spacer{flex:1;}
+.tb-actions{display:flex;align-items:center;gap:4px;}
+.tb-btn{
+  padding:5px 10px;border-radius:4px;font-size:.7rem;
+  font-family:'Inter',sans-serif;font-weight:600;
+  cursor:pointer;border:1px solid rgba(255,255,255,.3);
+  background:rgba(255,255,255,.15);color:#fff;
+  transition:all .15s;display:flex;align-items:center;gap:4px;
+  white-space:nowrap;
+}
+.tb-btn:hover{background:rgba(255,255,255,.25);}
+.tb-btn.save{background:#fff;color:var(--a1);border-color:#fff;}
+.tb-btn.save:hover{background:#f0f0ff;}
+.tb-avatar{
+  width:26px;height:26px;border-radius:50%;
+  background:rgba(255,255,255,.25);border:1.5px solid rgba(255,255,255,.5);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.7rem;font-weight:700;color:#fff;cursor:pointer;
+  margin-left:4px;
+}
+
+/* ===== RIBBON (Excel-style tabs) ===== */
+#ribbon{
+  grid-column:1/-1;
+  background:var(--white);
+  border-bottom:1px solid var(--b1);
+  display:flex;align-items:stretch;
+  padding:0 8px;gap:0;overflow-x:auto;
+}
+.rb-tab{
+  padding:0 14px;font-size:.72rem;font-weight:500;
+  color:var(--t3);cursor:pointer;
+  border-bottom:2px solid transparent;
+  display:flex;align-items:center;gap:5px;
+  transition:all .15s;white-space:nowrap;
+  flex-shrink:0;
+}
+.rb-tab:hover{color:var(--t2);border-bottom-color:var(--b2);}
+.rb-tab.active{color:var(--a1);border-bottom-color:var(--a1);font-weight:600;}
+
+/* ===== SIDEBAR ===== */
+#sidebar{
+  background:var(--white);
+  border-right:1px solid var(--b1);
+  display:flex;flex-direction:column;
+  overflow:hidden;box-shadow:var(--shadow);
+}
+.sb-head{
+  padding:10px 12px 8px;
+  border-bottom:1px solid var(--b1);
+  font-size:.65rem;font-weight:700;color:var(--t3);
+  text-transform:uppercase;letter-spacing:1.2px;
+}
+.sb-nav{flex:1;overflow-y:auto;padding:6px;}
+.sb-item{
+  display:flex;align-items:center;gap:7px;
+  padding:7px 10px;border-radius:var(--r);
+  cursor:pointer;font-size:.75rem;font-weight:500;
+  color:var(--t2);transition:all .15s;margin-bottom:1px;
+}
+.sb-item:hover{background:var(--s1);color:var(--t1);}
+.sb-item.active{background:#ebebff;color:var(--a1);font-weight:600;}
+.sb-item-icon{font-size:.85rem;width:18px;text-align:center;flex-shrink:0;}
+.sb-item-badge{
+  margin-left:auto;background:var(--a1);color:#fff;
+  font-size:.55rem;font-weight:700;padding:1px 5px;border-radius:8px;
+}
+.sb-divider{height:1px;background:var(--b1);margin:6px 8px;}
+
+/* ===== EDITOR ===== */
+#editor{
+  display:flex;flex-direction:column;
+  overflow:hidden;background:var(--bg);
+}
+.ed-topbar{
+  background:var(--white);border-bottom:1px solid var(--b1);
+  padding:8px 14px;display:flex;align-items:center;gap:8px;
+  flex-shrink:0;box-shadow:var(--shadow);
+}
+.ed-section-title{
+  font-size:.82rem;font-weight:700;color:var(--t1);
+  display:flex;align-items:center;gap:6px;
+}
+.ed-badge{
+  background:var(--a1);color:#fff;
+  font-size:.58rem;font-weight:700;
+  padding:2px 7px;border-radius:8px;letter-spacing:.3px;
+}
+.ed-spacer{flex:1;}
+.ed-nav-btn{
+  padding:5px 10px;border-radius:6px;font-size:.7rem;font-weight:600;
+  cursor:pointer;border:1px solid var(--b1);background:var(--white);
+  color:var(--t2);transition:all .15s;display:flex;align-items:center;gap:4px;
+}
+.ed-nav-btn:hover{border-color:var(--a1);color:var(--a1);}
+.ed-nav-btn.pri{background:var(--a1);border-color:var(--a1);color:#fff;}
+.ed-body{flex:1;overflow-y:auto;}
+
+/* ===== EXCEL TABLE ===== */
+.xl-wrap{padding:14px;}
+.xl-tbl{
+  width:100%;border-collapse:collapse;
+  background:var(--white);
+  border:1px solid var(--b1);border-radius:var(--r);
+  overflow:hidden;box-shadow:var(--shadow);
+}
+.xl-tbl thead th{
+  background:#f0f1f8;padding:8px 10px;
+  font-size:.65rem;font-weight:700;color:var(--t2);
+  text-transform:uppercase;letter-spacing:.8px;
+  text-align:left;border-bottom:1px solid var(--b1);
+  border-right:1px solid var(--b1);white-space:nowrap;
+}
+.xl-tbl thead th:last-child{border-right:none;}
+.xl-tbl tbody tr{border-bottom:1px solid #f0f1f6;transition:background .1s;}
+.xl-tbl tbody tr:last-child{border-bottom:none;}
+.xl-tbl tbody tr:hover{background:#fafbff;}
+.xl-tbl tbody td{padding:0;border-right:1px solid #f0f1f6;vertical-align:middle;}
+.xl-tbl tbody td:last-child{border-right:none;}
+.rn{
+  width:34px;min-width:34px;text-align:center;
+  font-size:.62rem;color:var(--t3);font-weight:600;
+  background:#f7f8fc;border-right:1px solid var(--b1) !important;
+  padding:6px 3px;cursor:pointer;user-select:none;
+}
+.rn:hover{background:#e8e9f5;}
+.cell-inp{
+  width:100%;padding:7px 9px;
+  background:transparent;border:none;outline:none;
+  color:var(--t1);font-family:'Inter',sans-serif;
+  font-size:.78rem;min-height:34px;resize:none;overflow:hidden;
+}
+.cell-inp:focus{background:#f5f6ff;box-shadow:inset 0 0 0 2px var(--a1);}
+.cell-inp::placeholder{color:var(--t3);}
+select.cell-inp{cursor:pointer;}
+.add-row{
+  display:flex;align-items:center;gap:6px;
+  padding:8px 12px;font-size:.73rem;color:var(--t3);
+  cursor:pointer;transition:all .15s;
+  border-top:1px dashed var(--b1);
+  background:var(--white);border-radius:0 0 var(--r) var(--r);
+}
+.add-row:hover{color:var(--a1);background:#fafbff;}
+.del-btn{
+  background:none;border:none;color:var(--t3);
+  cursor:pointer;font-size:.72rem;padding:5px 7px;
+  border-radius:4px;transition:all .15s;display:block;margin:auto;
+}
+.del-btn:hover{background:#fff0f2;color:var(--a2);}
+.act-col{width:36px;min-width:36px;}
+
+/* ===== PERSONAL INFO GRID ===== */
+.info-wrap{padding:14px;}
+.info-grid{
+  background:var(--white);border:1px solid var(--b1);
+  border-radius:var(--r);overflow:hidden;
+  box-shadow:var(--shadow);
+}
+.info-row-wrap{display:grid;grid-template-columns:140px 1fr;border-bottom:1px solid #f0f1f6;}
+.info-row-wrap:last-child{border-bottom:none;}
+.info-lbl{
+  background:#f7f8fc;padding:8px 12px;
+  font-size:.66rem;font-weight:700;color:var(--t2);
+  text-transform:uppercase;letter-spacing:.6px;
+  display:flex;align-items:center;gap:6px;
+  border-right:1px solid var(--b1);
+}
+.info-cell{background:var(--white);}
+.info-cell input,.info-cell textarea{
+  width:100%;padding:7px 10px;background:transparent;
+  border:none;outline:none;color:var(--t1);
+  font-family:'Inter',sans-serif;font-size:.8rem;resize:none;
+}
+.info-cell input:focus,.info-cell textarea:focus{background:#f5f6ff;}
+.info-cell input::placeholder,.info-cell textarea::placeholder{color:var(--t3);}
+
+/* Photo */
+.photo-row{
+  padding:14px;display:flex;gap:14px;align-items:flex-start;
+}
+.photo-box{
+  width:86px;height:100px;border:1.5px dashed var(--b2);
+  border-radius:var(--r);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:4px;
+  cursor:pointer;transition:all .2s;overflow:hidden;
+  background:var(--s1);flex-shrink:0;
+}
+.photo-box:hover{border-color:var(--a1);background:#f0f1ff;}
+.photo-box img{width:100%;height:100%;object-fit:cover;}
+.photo-lbl{font-size:.6rem;color:var(--t3);text-align:center;line-height:1.3;padding:0 6px;}
+
+/* Summary */
+.summ-wrap{padding:0 14px 14px;}
+.field-lbl{font-size:.66rem;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;}
+.summ-inp{
+  width:100%;padding:9px 11px;background:var(--white);
+  border:1px solid var(--b1);border-radius:var(--r);
+  color:var(--t1);font-family:'Inter',sans-serif;
+  font-size:.8rem;resize:none;outline:none;transition:border .2s;
+  box-shadow:var(--shadow);
+}
+.summ-inp:focus{border-color:var(--a1);}
+.summ-inp::placeholder{color:var(--t3);}
+
+/* Skills cloud */
+.skills-cloud{
+  padding:14px;display:flex;flex-wrap:wrap;gap:6px;
+  background:var(--white);border:1px solid var(--b1);
+  border-radius:var(--r);min-height:50px;
+  box-shadow:var(--shadow);
+}
+.sk-tag{
+  display:flex;align-items:center;gap:4px;
+  padding:4px 9px;background:var(--s2);
+  border:1px solid var(--b1);border-radius:20px;
+  font-size:.72rem;color:var(--t1);font-weight:500;
+}
+.sk-tag button{background:none;border:none;color:var(--t3);cursor:pointer;font-size:.65rem;line-height:1;padding:0 1px;}
+.sk-tag button:hover{color:var(--a2);}
+
+/* ===== AI PANEL ===== */
+.ai-wrap{padding:16px;max-width:680px;}
+.ai-card{
+  background:var(--white);border:1px solid var(--b1);
+  border-radius:var(--r);padding:16px;
+  box-shadow:var(--shadow-md);margin-bottom:14px;
+}
+.ai-card-title{
+  font-size:.78rem;font-weight:700;color:var(--t1);
+  margin-bottom:10px;display:flex;align-items:center;gap:7px;
+}
+.ai-badge{
+  background:var(--a1);color:#fff;font-size:.58rem;
+  padding:2px 7px;border-radius:8px;font-weight:700;
+}
+.ai-ta{
+  width:100%;padding:9px 11px;background:var(--s1);
+  border:1px solid var(--b1);border-radius:var(--r);
+  color:var(--t1);font-family:'Inter',sans-serif;
+  font-size:.78rem;resize:none;outline:none;
+  transition:border .2s;min-height:90px;line-height:1.6;
+}
+.ai-ta:focus{border-color:var(--a1);background:var(--white);}
+.ai-ta::placeholder{color:var(--t3);}
+.ai-row{display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap;}
+.ai-job-inp{
+  flex:1;min-width:160px;padding:6px 10px;
+  background:var(--s1);border:1px solid var(--b1);
+  border-radius:var(--r);color:var(--t1);
+  font-family:'Inter',sans-serif;font-size:.75rem;outline:none;
+  transition:border .2s;
+}
+.ai-job-inp:focus{border-color:var(--a1);background:var(--white);}
+.ai-job-inp::placeholder{color:var(--t3);}
+.ai-gen-btn{
+  padding:7px 16px;background:var(--a1);border:none;
+  border-radius:var(--r);color:#fff;font-family:'Inter',sans-serif;
+  font-size:.75rem;font-weight:700;cursor:pointer;
+  display:flex;align-items:center;gap:5px;transition:all .2s;
+  white-space:nowrap;
+}
+.ai-gen-btn:hover{background:#4a4de0;transform:translateY(-1px);box-shadow:0 4px 12px rgba(91,94,244,.35);}
+.ai-gen-btn:disabled{opacity:.55;cursor:not-allowed;transform:none;box-shadow:none;}
+.upload-box{
+  border:1.5px dashed var(--b2);border-radius:var(--r);
+  padding:18px;text-align:center;cursor:pointer;
+  transition:all .2s;background:var(--s1);
+}
+.upload-box:hover{border-color:var(--a1);background:#f5f5ff;}
+.upload-box-title{font-size:.78rem;font-weight:600;margin-bottom:3px;color:var(--t1);}
+.upload-box-sub{font-size:.7rem;color:var(--t3);}
+.file-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.f-chip{
+  display:flex;align-items:center;gap:5px;
+  padding:4px 9px;background:var(--white);
+  border:1px solid var(--b1);border-radius:6px;font-size:.7rem;color:var(--t2);
+}
+.f-chip button{background:none;border:none;color:var(--t3);cursor:pointer;font-size:.65rem;}
+.f-chip button:hover{color:var(--a2);}
+
+/* ===== PREVIEW ===== */
+#preview{
+  border-left:1px solid var(--b1);
+  background:var(--s1);display:flex;flex-direction:column;
+  overflow:hidden;
+}
+.pv-head{
+  background:var(--white);border-bottom:1px solid var(--b1);
+  padding:8px 12px;display:flex;align-items:center;
+  justify-content:space-between;flex-shrink:0;
+  box-shadow:var(--shadow);
+}
+.pv-title{font-size:.73rem;font-weight:700;color:var(--t2);display:flex;align-items:center;gap:5px;}
+.pv-btns{display:flex;gap:5px;}
+.pv-btn{
+  padding:4px 9px;border-radius:5px;font-size:.67rem;
+  font-family:'Inter',sans-serif;font-weight:600;
+  cursor:pointer;border:1px solid var(--b1);
+  background:var(--s1);color:var(--t2);transition:all .15s;
+}
+.pv-btn:hover{border-color:var(--a1);color:var(--a1);}
+.pv-btn.pri{background:var(--a1);border-color:var(--a1);color:#fff;}
+.pv-btn.pri:hover{background:#4a4de0;}
+.tpl-bar{
+  background:var(--white);border-bottom:1px solid var(--b1);
+  padding:6px 10px;display:flex;gap:4px;overflow-x:auto;flex-shrink:0;
+}
+.tpl-chip{
+  padding:3px 10px;border-radius:20px;font-size:.65rem;
+  font-weight:600;cursor:pointer;
+  border:1px solid var(--b1);background:var(--s1);
+  color:var(--t2);white-space:nowrap;transition:all .15s;
+}
+.tpl-chip:hover{border-color:var(--a1);color:var(--a1);}
+.tpl-chip.sel{background:var(--a1);border-color:var(--a1);color:#fff;}
+.pv-body{flex:1;overflow:auto;padding:10px;}
+.cv-scale-wrap{transform-origin:top left;}
+
+/* ===== CV TEMPLATES ===== */
+.cv-doc{width:794px;min-height:1123px;font-family:'Inter',sans-serif;font-size:9.5pt;line-height:1.55;}
+
+/* MODERN */
+.cv-doc.modern{background:#fff;padding:0;}
+.modern .cv-hdr{background:#1e2a4a;padding:30px 46px 22px;color:#fff;display:flex;align-items:center;gap:18px;}
+.modern .cv-photo,.modern .cv-photo-ph{width:70px;height:70px;border-radius:50%;object-fit:cover;border:2.5px solid rgba(255,255,255,.3);flex-shrink:0;}
+.modern .cv-photo-ph{background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:1.4rem;}
+.modern .cv-nm{font-family:'Playfair Display',serif;font-size:21pt;font-weight:700;color:#fff;margin-bottom:2px;}
+.modern .cv-role{font-size:9pt;color:#8ba0cc;margin-bottom:10px;}
+.modern .cv-contacts{display:flex;flex-wrap:wrap;gap:12px;font-size:8pt;color:#a0b4d8;}
+.modern .cv-body{padding:22px 46px;}
+.modern .sec-t{font-size:7.5pt;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#5b5ef4;border-bottom:1.5px solid #5b5ef4;padding-bottom:4px;margin:16px 0 9px;}
+.modern .cv-sum{font-size:9pt;color:#444;line-height:1.75;}
+.modern .j-t{font-weight:700;font-size:9.5pt;color:#1e2a4a;}
+.modern .j-c{font-size:8.5pt;color:#666;}
+.modern .j-d{font-size:7.5pt;color:#999;}
+.modern .sk-t{background:#eef0ff;color:#4040cc;padding:2px 8px;border-radius:3px;font-size:7.5pt;display:inline-block;margin:2px;}
+
+/* CLASSIC */
+.cv-doc.classic{background:#fff;padding:50px 54px;}
+.classic .cv-hdr{text-align:center;border-bottom:2px solid #1a1a2e;padding-bottom:14px;margin-bottom:16px;}
+.classic .cv-photo,.classic .cv-photo-ph{width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid #1a1a2e;display:inline-block;}
+.classic .cv-photo-ph{background:#f0f0f0;display:inline-flex;align-items:center;justify-content:center;font-size:1.2rem;vertical-align:middle;}
+.classic .cv-nm{font-family:'Playfair Display',serif;font-size:23pt;font-weight:700;color:#1a1a2e;margin-top:8px;}
+.classic .cv-role{font-size:10pt;color:#555;margin:3px 0 7px;}
+.classic .cv-contacts{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;font-size:8pt;color:#666;}
+.classic .sec-t{font-size:9pt;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#1a1a2e;border-bottom:1px solid #1a1a2e;padding-bottom:3px;margin:16px 0 9px;}
+.classic .cv-sum{font-size:9pt;color:#444;line-height:1.75;}
+.classic .j-t{font-weight:700;font-size:9.5pt;color:#1a1a2e;}
+.classic .j-c{font-size:8.5pt;color:#555;}
+.classic .j-d{font-size:7.5pt;color:#888;}
+.classic .sk-t{background:#f2f2f2;color:#333;padding:2px 8px;border-radius:3px;font-size:7.5pt;display:inline-block;margin:2px;border:1px solid #ddd;}
+
+/* MINIMAL */
+.cv-doc.minimal{background:#fefefe;padding:54px 66px;}
+.minimal .cv-hdr{margin-bottom:18px;}
+.minimal .cv-hdr-top{display:flex;align-items:center;gap:14px;margin-bottom:10px;}
+.minimal .cv-photo,.minimal .cv-photo-ph{width:58px;height:58px;border-radius:6px;object-fit:cover;flex-shrink:0;}
+.minimal .cv-photo-ph{background:#eee;display:flex;align-items:center;justify-content:center;font-size:1.1rem;}
+.minimal .cv-nm{font-family:'Playfair Display',serif;font-size:24pt;font-weight:600;color:#111;line-height:1.15;}
+.minimal .cv-role{font-size:10pt;color:#888;font-weight:300;margin-top:3px;}
+.minimal .cv-contacts{display:flex;flex-wrap:wrap;gap:14px;font-size:8pt;color:#888;border-top:1px solid #e8e8e8;border-bottom:1px solid #e8e8e8;padding:8px 0;margin-top:10px;}
+.minimal .sec-t{font-size:7pt;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;color:#bbb;margin:18px 0 9px;}
+.minimal .cv-sum{font-size:9pt;color:#444;line-height:1.75;}
+.minimal .j-t{font-weight:600;font-size:9.5pt;color:#111;}
+.minimal .j-c{font-size:8.5pt;color:#777;}
+.minimal .j-d{font-size:7.5pt;color:#bbb;}
+.minimal .sk-t{background:#f5f5f5;color:#444;padding:2px 8px;border-radius:3px;font-size:7.5pt;display:inline-block;margin:2px;}
+
+/* EXECUTIVE */
+.cv-doc.executive{background:#fff;padding:0;}
+.executive .cv-hdr{background:linear-gradient(135deg,#1a1a2e 0%,#2d1a4a 100%);padding:32px 50px;display:flex;align-items:center;gap:20px;}
+.executive .cv-photo,.executive .cv-photo-ph{width:74px;height:74px;border-radius:50%;object-fit:cover;border:2px solid #c9a227;flex-shrink:0;}
+.executive .cv-photo-ph{background:rgba(201,162,39,.15);display:flex;align-items:center;justify-content:center;font-size:1.4rem;}
+.executive .cv-nm{font-family:'Playfair Display',serif;font-size:22pt;font-weight:700;color:#fff;margin-bottom:3px;}
+.executive .cv-role{font-size:9.5pt;color:#c9a227;margin-bottom:9px;}
+.executive .cv-contacts{display:flex;flex-wrap:wrap;gap:12px;font-size:8pt;color:rgba(255,255,255,.65);}
+.executive .cv-body{padding:24px 50px;}
+.executive .sec-t{font-size:7.5pt;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#2d1a4a;border-bottom:1.5px solid #c9a227;padding-bottom:3px;margin:16px 0 9px;}
+.executive .cv-sum{font-size:9pt;color:#333;line-height:1.75;}
+.executive .j-t{font-weight:700;font-size:9.5pt;color:#2d1a4a;}
+.executive .j-c{font-size:8.5pt;color:#666;}
+.executive .j-d{font-size:7.5pt;color:#999;}
+.executive .sk-t{background:#f5f0ff;color:#2d1a4a;padding:2px 8px;border-radius:3px;font-size:7.5pt;display:inline-block;margin:2px;border:1px solid #ddd0ff;}
+
+/* Shared CV */
+.j-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:3px;}
+.j-left{flex:1;}
+.j-buls{padding-left:13px;margin-top:3px;}
+.j-buls li{font-size:8.5pt;margin-bottom:2.5px;line-height:1.55;color:#444;}
+.cv-job{margin-bottom:13px;}
+.cv-edu{margin-bottom:9px;}
+.edu-d{font-weight:600;font-size:9.5pt;}
+.edu-s,.edu-y{font-size:8.5pt;color:#777;}
+.sk-wrap{display:flex;flex-wrap:wrap;gap:3px;}
+.lang-row{font-size:8.5pt;color:#444;margin-bottom:3px;}
+
+/* ===== AUTH ===== */
+#auth-screen{
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;background:var(--bg);padding:20px;
+}
+.auth-card{
+  width:100%;max-width:360px;
+  background:var(--white);border:1px solid var(--b1);
+  border-radius:12px;padding:28px 24px;text-align:center;
+  box-shadow:var(--shadow-md);
+}
+.auth-logo{
+  font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700;
+  color:var(--a1);margin-bottom:4px;
+}
+.auth-badge{font-size:.6rem;color:var(--a2);font-weight:700;letter-spacing:1px;margin-bottom:10px;}
+.auth-tag{font-size:.75rem;color:var(--t2);line-height:1.65;margin-bottom:22px;}
+.a-btn{
+  width:100%;padding:10px 14px;border-radius:8px;
+  font-family:'Inter',sans-serif;font-size:.8rem;font-weight:600;
+  cursor:pointer;border:none;margin-bottom:7px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:all .2s;
+}
+.a-btn.google{background:#fff;color:#333;border:1px solid var(--b1);box-shadow:var(--shadow);}
+.a-btn.google:hover{background:var(--s1);}
+.a-btn.email{background:var(--a1);color:#fff;}
+.a-btn.email:hover{background:#4a4de0;}
+.a-btn.guest{background:var(--s1);color:var(--t2);border:1px solid var(--b1);}
+.a-btn.guest:hover{border-color:var(--a1);color:var(--a1);}
+.a-div{display:flex;align-items:center;gap:8px;margin:8px 0;color:var(--t3);font-size:.68rem;}
+.a-div::before,.a-div::after{content:'';flex:1;height:1px;background:var(--b1);}
+.guest-note{font-size:.62rem;color:var(--t3);margin-top:5px;}
+.a-form{display:none;}
+.a-form.on{display:block;text-align:left;}
+.a-inp{
+  width:100%;padding:9px 11px;background:var(--s1);
+  border:1px solid var(--b1);border-radius:7px;
+  color:var(--t1);font-family:'Inter',sans-serif;font-size:.78rem;
+  margin-bottom:7px;outline:none;transition:border .2s;
+}
+.a-inp:focus{border-color:var(--a1);background:#fff;}
+.a-inp::placeholder{color:var(--t3);}
+.a-back{background:none;border:none;color:var(--t2);font-size:.72rem;cursor:pointer;display:flex;align-items:center;gap:4px;margin-bottom:10px;}
+
+/* History */
+.hist-wrap{padding:12px;}
+.h-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:9px 11px;border-radius:var(--r);cursor:pointer;
+  margin-bottom:4px;background:var(--white);border:1px solid var(--b1);
+  transition:all .15s;box-shadow:var(--shadow);
+}
+.h-item:hover{border-color:var(--a1);box-shadow:0 2px 8px rgba(91,94,244,.1);}
+.h-nm{font-size:.78rem;font-weight:600;color:var(--t1);}
+.h-dt{font-size:.65rem;color:var(--t3);margin-top:2px;}
+.h-del{background:none;border:none;color:var(--t3);cursor:pointer;font-size:.72rem;padding:4px 6px;border-radius:5px;opacity:0;transition:all .15s;}
+.h-item:hover .h-del{opacity:1;}
+.h-del:hover{background:#fff0f2;color:var(--a2);}
+
+/* Loading */
+#load-overlay{
+  position:fixed;inset:0;background:rgba(245,246,250,.88);backdrop-filter:blur(4px);
+  display:none;align-items:center;justify-content:center;
+  flex-direction:column;gap:14px;z-index:1000;
+}
+#load-overlay.on{display:flex;}
+.spin{width:36px;height:36px;border-radius:50%;border:3px solid var(--b1);border-top-color:var(--a1);animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.load-txt{font-size:.8rem;color:var(--t2);font-weight:500;}
+
+/* Toast */
+#toast{
+  position:fixed;bottom:18px;right:18px;
+  background:var(--white);border:1px solid var(--b1);
+  border-radius:8px;padding:9px 13px;font-size:.75rem;
+  color:var(--t1);z-index:2000;
+  transform:translateY(8px);opacity:0;
+  transition:all .25s;max-width:250px;
+  box-shadow:var(--shadow-md);
+}
+#toast.on{transform:translateY(0);opacity:1;}
+#toast.ok{border-color:var(--a3);color:var(--a3);}
+#toast.err{border-color:var(--a2);color:var(--a2);}
+
+/* Modal */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;z-index:500;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s;}
+.overlay.on{opacity:1;pointer-events:all;}
+.modal{background:var(--white);border:1px solid var(--b1);border-radius:12px;padding:22px;width:100%;max-width:340px;transform:scale(.97);transition:transform .2s;box-shadow:var(--shadow-md);}
+.overlay.on .modal{transform:scale(1);}
+.modal-t{font-size:.88rem;font-weight:700;color:var(--t1);margin-bottom:6px;}
+.modal-txt{font-size:.76rem;color:var(--t2);margin-bottom:14px;line-height:1.6;}
+.modal-btns{display:flex;gap:7px;}
+.m-btn{flex:1;padding:8px;border-radius:7px;font-family:'Inter',sans-serif;font-size:.76rem;font-weight:600;cursor:pointer;border:1px solid var(--b1);background:var(--s1);color:var(--t2);transition:all .2s;}
+.m-btn:hover{border-color:var(--a1);color:var(--a1);}
+.m-btn.danger{background:#fff5f6;border-color:var(--a2);color:var(--a2);}
+.m-btn.danger:hover{background:var(--a2);color:#fff;}
+
+@media(max-width:900px){
+  #app{grid-template-columns:0 1fr 0;grid-template-rows:var(--ribbon) 36px 1fr;}
+  #sidebar,#preview{display:none;}
+}
+@media print{
+  #titlebar,#ribbon,#sidebar,#editor .ed-topbar{display:none!important;}
+  #app{display:block;}
+  #preview{border:none;width:100%!important;display:block!important;}
+  .pv-head,.tpl-bar{display:none!important;}
+  .cv-scale-wrap{transform:none!important;}
+  .pv-body{padding:0;}
 }
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-body {
-  font-family: 'DM Sans', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-
-/* ========= SIDEBAR ========= */
-#sidebar {
-  position: fixed;
-  left: 0; top: 0;
-  width: var(--sidebar);
-  height: 100vh;
-  background: var(--surface);
-  border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  z-index: 100;
-  transform: translateX(0);
-  transition: transform 0.3s ease;
-}
-
-#sidebar.hidden { transform: translateX(-100%); }
-
-.sidebar-header {
-  padding: 24px 20px 16px;
-  border-bottom: 1px solid var(--border);
-}
-
-.logo {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.4rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.logo span { font-size: 0.7rem; font-family: 'DM Sans', sans-serif; font-weight: 400; color: var(--text2); display: block; margin-top: 2px; -webkit-text-fill-color: var(--text2); }
-
-.sidebar-user {
-  padding: 16px 20px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  border-bottom: 1px solid var(--border);
-}
-
-.avatar {
-  width: 36px; height: 36px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.85rem; font-weight: 600; color: #fff;
-  flex-shrink: 0;
-}
-
-.user-info { flex: 1; overflow: hidden; }
-.user-name { font-size: 0.85rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.user-plan { font-size: 0.7rem; color: var(--text2); }
-
-.sidebar-nav {
-  padding: 16px 12px;
-  flex: 1;
-  overflow-y: auto;
-}
-
-.nav-label {
-  font-size: 0.65rem;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  color: var(--text3);
-  padding: 8px 8px 4px;
-}
-
-.new-cv-btn {
-  width: 100%;
-  padding: 10px 14px;
-  background: linear-gradient(135deg, var(--accent), #8b80ff);
-  border: none;
-  border-radius: 10px;
-  color: #fff;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.85rem;
-  font-weight: 500;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 16px;
-  transition: opacity 0.2s;
-}
-
-.new-cv-btn:hover { opacity: 0.85; }
-
-.history-item {
-  padding: 10px 12px;
-  border-radius: 10px;
-  cursor: pointer;
-  margin-bottom: 4px;
-  transition: background 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.history-item:hover { background: var(--surface2); }
-.history-item.active { background: var(--surface2); border-left: 3px solid var(--accent); }
-
-.history-item-info { flex: 1; overflow: hidden; }
-.history-item-name { font-size: 0.82rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.history-item-date { font-size: 0.68rem; color: var(--text3); margin-top: 2px; }
-
-.history-item-actions { display: flex; gap: 4px; opacity: 0; transition: opacity 0.2s; }
-.history-item:hover .history-item-actions { opacity: 1; }
-
-.icon-btn {
-  background: none;
-  border: none;
-  color: var(--text2);
-  cursor: pointer;
-  padding: 4px;
-  border-radius: 6px;
-  font-size: 0.75rem;
-  transition: all 0.2s;
-}
-
-.icon-btn:hover { background: var(--border); color: var(--text); }
-.icon-btn.delete:hover { color: var(--accent2); }
-
-.sidebar-footer {
-  padding: 16px 20px;
-  border-top: 1px solid var(--border);
-}
-
-.logout-btn {
-  width: 100%;
-  padding: 9px;
-  background: none;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  color: var(--text2);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.82rem;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.logout-btn:hover { border-color: var(--accent2); color: var(--accent2); }
-
-/* ========= MAIN ========= */
-#main {
-  margin-left: var(--sidebar);
-  min-height: 100vh;
-  transition: margin 0.3s ease;
-}
-
-#main.full { margin-left: 0; }
-
-/* ========= TOPBAR ========= */
-.topbar {
-  position: sticky;
-  top: 0;
-  background: rgba(15,15,19,0.85);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border);
-  padding: 14px 24px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  z-index: 50;
-}
-
-.menu-toggle {
-  background: none;
-  border: none;
-  color: var(--text2);
-  cursor: pointer;
-  font-size: 1.1rem;
-  padding: 4px;
-  display: none;
-}
-
-.topbar-title {
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: var(--text2);
-}
-
-/* ========= AUTH SCREEN ========= */
-#auth-screen {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  padding: 24px;
-  background: var(--bg);
-}
-
-.auth-card {
-  width: 100%;
-  max-width: 420px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 40px 36px;
-  text-align: center;
-}
-
-.auth-logo {
-  font-family: 'Playfair Display', serif;
-  font-size: 2.2rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 6px;
-}
-
-.auth-tagline {
-  font-size: 0.85rem;
-  color: var(--text2);
-  margin-bottom: 32px;
-}
-
-.auth-btn {
-  width: 100%;
-  padding: 12px 20px;
-  border-radius: 12px;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  border: none;
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  transition: all 0.2s;
-}
-
-.auth-btn.google {
-  background: #fff;
-  color: #333;
-}
-
-.auth-btn.google:hover { background: #f0f0f0; }
-
-.auth-btn.email {
-  background: var(--accent);
-  color: #fff;
-}
-
-.auth-btn.email:hover { opacity: 0.85; }
-
-.auth-btn.guest {
-  background: var(--surface2);
-  color: var(--text2);
-  border: 1px solid var(--border);
-}
-
-.auth-btn.guest:hover { border-color: var(--accent); color: var(--accent); }
-
-.auth-divider {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 16px 0;
-  color: var(--text3);
-  font-size: 0.75rem;
-}
-
-.auth-divider::before, .auth-divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--border);
-}
-
-.guest-limit {
-  font-size: 0.72rem;
-  color: var(--text3);
-  margin-top: 8px;
-}
-
-/* Email Auth Form */
-.auth-form { display: none; }
-.auth-form.active { display: block; }
-
-.auth-input {
-  width: 100%;
-  padding: 12px 16px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  color: var(--text);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.88rem;
-  margin-bottom: 10px;
-  outline: none;
-  transition: border 0.2s;
-}
-
-.auth-input:focus { border-color: var(--accent); }
-.auth-input::placeholder { color: var(--text3); }
-
-.auth-back {
-  background: none;
-  border: none;
-  color: var(--text2);
-  font-size: 0.82rem;
-  cursor: pointer;
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.auth-back:hover { color: var(--text); }
-
-/* ========= HOME / CREATE ========= */
-#create-screen {
-  max-width: 860px;
-  margin: 0 auto;
-  padding: 40px 24px;
-}
-
-.screen-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.8rem;
-  font-weight: 700;
-  margin-bottom: 6px;
-}
-
-.screen-subtitle {
-  color: var(--text2);
-  font-size: 0.88rem;
-  margin-bottom: 32px;
-}
-
-/* Upload Zone */
-.upload-zone {
-  border: 2px dashed var(--border);
-  border-radius: var(--radius);
-  padding: 32px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.2s;
-  margin-bottom: 20px;
-  background: var(--surface);
-}
-
-.upload-zone:hover, .upload-zone.dragover {
-  border-color: var(--accent);
-  background: rgba(108,99,255,0.05);
-}
-
-.upload-icon { font-size: 2.5rem; margin-bottom: 10px; }
-.upload-title { font-size: 0.95rem; font-weight: 500; margin-bottom: 4px; }
-.upload-sub { font-size: 0.78rem; color: var(--text2); }
-.upload-types { font-size: 0.72rem; color: var(--text3); margin-top: 8px; }
-
-#file-input { display: none; }
-
-.uploaded-files {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 20px;
-}
-
-.file-chip {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  font-size: 0.78rem;
-}
-
-.file-chip button {
-  background: none;
-  border: none;
-  color: var(--text3);
-  cursor: pointer;
-  font-size: 0.7rem;
-  padding: 0 2px;
-}
-
-.file-chip button:hover { color: var(--accent2); }
-
-/* OR divider */
-.or-divider {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: var(--text3);
-  font-size: 0.8rem;
-  margin-bottom: 20px;
-}
-
-.or-divider::before, .or-divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--border);
-}
-
-/* Text Input */
-.input-area {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px;
-  margin-bottom: 20px;
-  transition: border 0.2s;
-}
-
-.input-area:focus-within { border-color: var(--accent); }
-
-.input-area textarea {
-  width: 100%;
-  background: none;
-  border: none;
-  outline: none;
-  color: var(--text);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.88rem;
-  resize: none;
-  min-height: 120px;
-  line-height: 1.6;
-}
-
-.input-area textarea::placeholder { color: var(--text3); }
-
-.input-hints {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 10px;
-}
-
-.hint-chip {
-  padding: 4px 10px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  font-size: 0.72rem;
-  color: var(--text2);
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.hint-chip:hover { border-color: var(--accent); color: var(--accent); }
-
-/* Template Selector */
-.template-section {
-  margin-bottom: 24px;
-}
-
-.section-label {
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: var(--text2);
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.ai-badge {
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
-  color: #fff;
-  font-size: 0.6rem;
-  padding: 2px 7px;
-  border-radius: 10px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-}
-
-.templates-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 10px;
-}
-
-.template-card {
-  border: 2px solid var(--border);
-  border-radius: 10px;
-  padding: 12px 8px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.2s;
-  background: var(--surface);
-}
-
-.template-card:hover { border-color: var(--accent); }
-.template-card.selected { border-color: var(--accent); background: rgba(108,99,255,0.08); }
-.template-card.ai-pick { border-color: var(--accent2); }
-
-.template-preview {
-  height: 52px;
-  border-radius: 6px;
-  margin-bottom: 6px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  padding: 6px;
-}
-
-.tp-line {
-  height: 4px;
-  border-radius: 2px;
-  background: currentColor;
-}
-
-.template-card.t-modern .template-preview { background: #1a1a2e; color: #6c63ff; }
-.template-card.t-classic .template-preview { background: #fafaf5; color: #2c2c2c; }
-.template-card.t-minimal .template-preview { background: #f8f8f8; color: #333; }
-.template-card.t-creative .template-preview { background: #0f1923; color: #ff6584; }
-.template-card.t-ai { background: rgba(108,99,255,0.05); }
-.template-card.t-ai .template-preview { background: linear-gradient(135deg, #1a1a2e, #0f1923); }
-.template-card.t-ai .tp-line { background: linear-gradient(90deg, #6c63ff, #ff6584); }
-
-.template-name { font-size: 0.68rem; color: var(--text2); }
-
-/* Generate Button */
-.generate-btn {
-  width: 100%;
-  padding: 15px;
-  background: linear-gradient(135deg, var(--accent), #8b80ff);
-  border: none;
-  border-radius: var(--radius);
-  color: #fff;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  letter-spacing: 0.3px;
-}
-
-.generate-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(108,99,255,0.35); }
-.generate-btn:active { transform: translateY(0); }
-.generate-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-
-/* ========= LOADING ========= */
-#loading-screen {
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 60vh;
-  gap: 20px;
-}
-
-.loading-spinner {
-  width: 56px; height: 56px;
-  border-radius: 50%;
-  border: 3px solid var(--border);
-  border-top-color: var(--accent);
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin { to { transform: rotate(360deg); } }
-
-.loading-steps {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 280px;
-}
-
-.loading-step {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 0.85rem;
-  color: var(--text3);
-  transition: color 0.3s;
-}
-
-.loading-step.active { color: var(--text); }
-.loading-step.done { color: var(--success); }
-
-.step-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: var(--border);
-  flex-shrink: 0;
-  transition: background 0.3s;
-}
-
-.loading-step.active .step-dot { background: var(--accent); animation: pulse 1s ease infinite; }
-.loading-step.done .step-dot { background: var(--success); }
-
-@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.6;transform:scale(1.3)} }
-
-/* ========= CV RESULT ========= */
-#result-screen {
-  display: none;
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 24px;
-  gap: 24px;
-}
-
-.result-layout {
-  display: grid;
-  grid-template-columns: 1fr 380px;
-  gap: 24px;
-  align-items: start;
-}
-
-/* CV Preview */
-.cv-preview-wrapper {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow: hidden;
-}
-
-.cv-preview-header {
-  padding: 14px 18px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.cv-preview-title { font-size: 0.82rem; font-weight: 500; color: var(--text2); }
-
-.cv-actions { display: flex; gap: 8px; }
-
-.action-btn {
-  padding: 7px 14px;
-  border-radius: 9px;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.78rem;
-  font-weight: 500;
-  cursor: pointer;
-  border: 1px solid var(--border);
-  background: var(--surface2);
-  color: var(--text2);
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.action-btn:hover { border-color: var(--accent); color: var(--accent); }
-
-.action-btn.primary {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #fff;
-}
-
-.action-btn.primary:hover { opacity: 0.85; }
-
-#cv-render-area {
-  padding: 0;
-  overflow: auto;
-  max-height: 75vh;
-}
-
-/* ========= CV TEMPLATES ========= */
-.cv-doc {
-  width: 794px;
-  min-height: 1123px;
-  padding: 48px 52px;
-  font-family: 'DM Sans', sans-serif;
-  position: relative;
-  background: #fff;
-  color: #1a1a1a;
-  font-size: 9.5pt;
-  line-height: 1.5;
-  transform-origin: top left;
-}
-
-/* Modern Template */
-.cv-doc.modern {
-  background: #fff;
-  font-family: 'DM Sans', sans-serif;
-}
-
-.cv-doc.modern .cv-header {
-  background: #1a1a2e;
-  color: #fff;
-  margin: -48px -52px 32px;
-  padding: 36px 52px;
-}
-
-.cv-doc.modern .cv-name {
-  font-family: 'Playfair Display', serif;
-  font-size: 22pt;
-  font-weight: 700;
-  color: #fff;
-  margin-bottom: 4px;
-}
-
-.cv-doc.modern .cv-title {
-  font-size: 10pt;
-  color: #9090c8;
-  margin-bottom: 14px;
-}
-
-.cv-doc.modern .cv-contacts {
-  display: flex; flex-wrap: wrap; gap: 14px;
-  font-size: 8pt;
-  color: #b0b0d8;
-}
-
-.cv-doc.modern .cv-section-title {
-  font-size: 9pt;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  color: #6c63ff;
-  border-bottom: 1.5px solid #6c63ff;
-  padding-bottom: 5px;
-  margin: 20px 0 10px;
-}
-
-/* Classic Template */
-.cv-doc.classic .cv-header {
-  text-align: center;
-  border-bottom: 2px solid #2c2c2c;
-  padding-bottom: 16px;
-  margin-bottom: 20px;
-}
-
-.cv-doc.classic .cv-name {
-  font-family: 'Playfair Display', serif;
-  font-size: 24pt;
-  font-weight: 700;
-  color: #1a1a1a;
-  margin-bottom: 4px;
-}
-
-.cv-doc.classic .cv-title {
-  font-size: 10pt;
-  color: #555;
-  margin-bottom: 8px;
-}
-
-.cv-doc.classic .cv-contacts {
-  display: flex; flex-wrap: wrap; gap: 14px;
-  justify-content: center;
-  font-size: 8pt;
-  color: #555;
-}
-
-.cv-doc.classic .cv-section-title {
-  font-size: 9pt;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: #1a1a1a;
-  border-bottom: 1px solid #1a1a1a;
-  padding-bottom: 4px;
-  margin: 18px 0 10px;
-}
-
-/* Minimal Template */
-.cv-doc.minimal {
-  background: #fafafa;
-  padding: 52px 64px;
-}
-
-.cv-doc.minimal .cv-name {
-  font-family: 'Playfair Display', serif;
-  font-size: 26pt;
-  font-weight: 600;
-  color: #111;
-  margin-bottom: 4px;
-}
-
-.cv-doc.minimal .cv-title {
-  font-size: 11pt;
-  color: #888;
-  font-weight: 300;
-  margin-bottom: 12px;
-}
-
-.cv-doc.minimal .cv-contacts {
-  display: flex; flex-wrap: wrap; gap: 16px;
-  font-size: 8pt;
-  color: #888;
-  border-top: 1px solid #e0e0e0;
-  border-bottom: 1px solid #e0e0e0;
-  padding: 10px 0;
-  margin-bottom: 24px;
-}
-
-.cv-doc.minimal .cv-section-title {
-  font-size: 7.5pt;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  color: #aaa;
-  margin: 20px 0 10px;
-}
-
-/* Creative Template */
-.cv-doc.creative {
-  background: #0f1923;
-  color: #e0e0f0;
-  display: grid;
-  grid-template-columns: 220px 1fr;
-  gap: 0;
-  padding: 0;
-}
-
-.cv-doc.creative .cv-sidebar {
-  background: #ff6584;
-  padding: 36px 24px;
-  min-height: 100%;
-}
-
-.cv-doc.creative .cv-main {
-  padding: 36px 32px;
-}
-
-.cv-doc.creative .cv-name {
-  font-family: 'Playfair Display', serif;
-  font-size: 18pt;
-  font-weight: 700;
-  color: #fff;
-  margin-bottom: 4px;
-}
-
-.cv-doc.creative .cv-title {
-  font-size: 9pt;
-  color: rgba(255,255,255,0.75);
-  margin-bottom: 20px;
-}
-
-.cv-doc.creative .cv-sidebar-section {
-  margin-bottom: 20px;
-}
-
-.cv-doc.creative .cv-sidebar-label {
-  font-size: 7pt;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  color: rgba(255,255,255,0.6);
-  margin-bottom: 6px;
-  font-weight: 600;
-}
-
-.cv-doc.creative .cv-sidebar-value {
-  font-size: 8pt;
-  color: rgba(255,255,255,0.9);
-  line-height: 1.6;
-}
-
-.cv-doc.creative .cv-section-title {
-  font-size: 8pt;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  color: #ff6584;
-  font-weight: 600;
-  margin: 20px 0 8px;
-}
-
-/* Shared CV elements */
-.cv-summary {
-  font-size: 9pt;
-  color: #555;
-  line-height: 1.7;
-  margin-bottom: 4px;
-}
-
-.cv-doc.modern .cv-summary { color: #444; }
-.cv-doc.creative .cv-summary { color: #b0b0c8; }
-
-.cv-job {
-  margin-bottom: 14px;
-}
-
-.cv-job-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 4px;
-}
-
-.cv-job-title {
-  font-weight: 600;
-  font-size: 9.5pt;
-}
-
-.cv-job-company {
-  font-size: 8.5pt;
-  color: #777;
-}
-
-.cv-job-date {
-  font-size: 8pt;
-  color: #999;
-  white-space: nowrap;
-}
-
-.cv-doc.modern .cv-job-title { color: #1a1a2e; }
-.cv-doc.creative .cv-job-title { color: #e0e0f0; }
-.cv-doc.creative .cv-job-company { color: #8888aa; }
-.cv-doc.creative .cv-job-date { color: #6666aa; }
-
-.cv-bullets {
-  padding-left: 14px;
-  margin-top: 4px;
-}
-
-.cv-bullets li {
-  font-size: 8.5pt;
-  color: #555;
-  margin-bottom: 3px;
-  line-height: 1.55;
-}
-
-.cv-doc.creative .cv-bullets li { color: #9090b8; }
-
-.cv-skills-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.cv-skill-tag {
-  padding: 3px 10px;
-  background: #f0f0f8;
-  border-radius: 4px;
-  font-size: 8pt;
-  color: #333;
-}
-
-.cv-doc.modern .cv-skill-tag { background: #eeeeff; color: #4040aa; }
-.cv-doc.creative .cv-skill-tag { background: rgba(108,99,255,0.15); color: #aaaaff; }
-.cv-doc.minimal .cv-skill-tag { background: #eee; color: #555; }
-
-.cv-edu {
-  margin-bottom: 10px;
-}
-
-.cv-edu-degree { font-weight: 600; font-size: 9.5pt; }
-.cv-edu-school { font-size: 8.5pt; color: #777; }
-.cv-edu-year { font-size: 8pt; color: #999; }
-.cv-doc.creative .cv-edu-degree { color: #e0e0f0; }
-.cv-doc.creative .cv-edu-school { color: #8888aa; }
-
-.suggested-tag {
-  display: inline-block;
-  background: rgba(255,101,132,0.15);
-  color: #ff6584;
-  font-size: 7pt;
-  padding: 1px 6px;
-  border-radius: 4px;
-  margin-left: 6px;
-  font-weight: 600;
-}
-
-/* ========= RIGHT PANEL ========= */
-.result-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.panel-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px;
-}
-
-.panel-card-title {
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: var(--text2);
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  margin-bottom: 12px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-/* ATS Score */
-.ats-score-ring {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 10px;
-}
-
-.ats-circle {
-  width: 64px; height: 64px;
-  border-radius: 50%;
-  background: conic-gradient(var(--accent) calc(var(--score) * 1%), var(--surface2) 0%);
-  display: flex; align-items: center; justify-content: center;
-  position: relative;
-}
-
-.ats-circle::after {
-  content: '';
-  width: 50px; height: 50px;
-  border-radius: 50%;
-  background: var(--surface);
-  position: absolute;
-}
-
-.ats-number {
-  position: relative;
-  z-index: 1;
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--accent);
-}
-
-.ats-label { font-size: 0.8rem; font-weight: 500; }
-.ats-sub { font-size: 0.72rem; color: var(--text2); margin-top: 2px; }
-
-.improvement-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--border);
-  font-size: 0.78rem;
-  color: var(--text2);
-  line-height: 1.5;
-}
-
-.improvement-item:last-child { border-bottom: none; }
-.improvement-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--warning); flex-shrink: 0; margin-top: 5px; }
-
-/* Missing Docs */
-.missing-doc-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 10px;
-  background: rgba(255,179,71,0.08);
-  border: 1px solid rgba(255,179,71,0.2);
-  border-radius: 8px;
-  margin-bottom: 6px;
-  font-size: 0.78rem;
-  color: var(--text);
-}
-
-.missing-doc-icon { font-size: 0.9rem; }
-.missing-doc-label { flex: 1; }
-.missing-doc-priority {
-  font-size: 0.65rem;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-weight: 600;
-}
-
-.missing-doc-priority.high { background: rgba(255,101,132,0.15); color: var(--accent2); }
-.missing-doc-priority.med { background: rgba(255,179,71,0.15); color: var(--warning); }
-
-/* Edit Section */
-.edit-field {
-  margin-bottom: 10px;
-}
-
-.edit-label {
-  font-size: 0.72rem;
-  color: var(--text2);
-  margin-bottom: 4px;
-  font-weight: 500;
-}
-
-.edit-input {
-  width: 100%;
-  padding: 9px 12px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 9px;
-  color: var(--text);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.82rem;
-  outline: none;
-  transition: border 0.2s;
-}
-
-.edit-input:focus { border-color: var(--accent); }
-
-.save-edit-btn {
-  width: 100%;
-  padding: 9px;
-  background: var(--accent);
-  border: none;
-  border-radius: 9px;
-  color: #fff;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.82rem;
-  font-weight: 500;
-  cursor: pointer;
-  margin-top: 4px;
-}
-
-/* ========= MODALS ========= */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  backdrop-filter: blur(4px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 500;
-  padding: 24px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s;
-}
-
-.modal-overlay.active { opacity: 1; pointer-events: all; }
-
-.modal {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  padding: 28px;
-  width: 100%;
-  max-width: 400px;
-  transform: scale(0.95);
-  transition: transform 0.2s;
-}
-
-.modal-overlay.active .modal { transform: scale(1); }
-
-.modal-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.1rem;
-  font-weight: 700;
-  margin-bottom: 8px;
-}
-
-.modal-text { font-size: 0.85rem; color: var(--text2); margin-bottom: 20px; line-height: 1.6; }
-
-.modal-actions { display: flex; gap: 10px; }
-
-.modal-btn {
-  flex: 1;
-  padding: 10px;
-  border-radius: 10px;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.85rem;
-  font-weight: 500;
-  cursor: pointer;
-  border: 1px solid var(--border);
-  background: var(--surface2);
-  color: var(--text2);
-  transition: all 0.2s;
-}
-
-.modal-btn.danger { background: rgba(255,101,132,0.1); border-color: var(--accent2); color: var(--accent2); }
-.modal-btn.danger:hover { background: var(--accent2); color: #fff; }
-.modal-btn:hover { border-color: var(--accent); color: var(--accent); }
-
-/* ========= TOAST ========= */
-#toast {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 12px 18px;
-  font-size: 0.85rem;
-  color: var(--text);
-  z-index: 1000;
-  transform: translateY(20px);
-  opacity: 0;
-  transition: all 0.3s;
-  max-width: 300px;
-}
-
-#toast.show { transform: translateY(0); opacity: 1; }
-#toast.success { border-color: var(--success); color: var(--success); }
-#toast.error { border-color: var(--accent2); color: var(--accent2); }
-
-/* ========= RESPONSIVE ========= */
-@media (max-width: 900px) {
-  #sidebar { transform: translateX(-100%); }
-  #sidebar.mobile-open { transform: translateX(0); }
-  #main { margin-left: 0; }
-  .menu-toggle { display: block; }
-  .result-layout { grid-template-columns: 1fr; }
-  #cv-render-area { overflow-x: auto; }
-  .templates-grid { grid-template-columns: repeat(3, 1fr); }
-}
-
-@media (max-width: 500px) {
-  #create-screen { padding: 20px 16px; }
-  .auth-card { padding: 28px 20px; }
-  .templates-grid { grid-template-columns: repeat(2, 1fr); }
-}
-
-/* Overlay for mobile sidebar */
-#sidebar-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  z-index: 99;
-}
-
-#sidebar-overlay.active { display: block; }
 </style>
 </head>
 <body>
 
-<!-- ===== AUTH SCREEN ===== -->
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="lg1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5b5ef4"/>
+      <stop offset="100%" stop-color="#e8445a"/>
+    </linearGradient>
+  </defs>
+  <symbol id="logo-icon" viewBox="0 0 48 48">
+    <rect width="48" height="48" rx="10" fill="url(#lg1)"/>
+    <rect x="11" y="9" width="22" height="26" rx="3" fill="white" opacity=".95"/>
+    <rect x="15" y="15" width="14" height="2.5" rx="1.2" fill="#5b5ef4" opacity=".7"/>
+    <rect x="15" y="20" width="11" height="1.8" rx=".9" fill="#aaa" opacity=".5"/>
+    <rect x="15" y="24" width="12" height="1.8" rx=".9" fill="#aaa" opacity=".5"/>
+    <rect x="15" y="28" width="8" height="1.8" rx=".9" fill="#aaa" opacity=".5"/>
+    <circle cx="34" cy="36" r="7" fill="url(#lg1)"/>
+    <path d="M34 30.5L35.4 34.6L39.5 36L35.4 37.4L34 41.5L32.6 37.4L28.5 36L32.6 34.6Z" fill="white"/>
+  </symbol>
+</svg>
+
+<!-- AUTH -->
 <div id="auth-screen">
   <div class="auth-card">
-    <div class="auth-logo">MakeCV</div>
-    <div style="font-size:0.7rem;color:var(--accent2);font-weight:600;letter-spacing:1px;margin-bottom:4px;">AI POWERED</div>
-    <div class="auth-tagline">Build a world-class CV in 1 minute.<br>Works for everyone, everywhere.</div>
-
+    <div style="display:flex;align-items:center;justify-content:center;gap:9px;margin-bottom:6px;">
+      <svg width="32" height="32" viewBox="0 0 48 48"><use href="#logo-icon"/></svg>
+      <div class="auth-logo">MakeCV</div>
+    </div>
+    <div class="auth-badge">✦ AI POWERED</div>
+    <div class="auth-tag">Excel-style CV editor with AI generation<br>Live preview · PDF export · Cloud sync</div>
     <div id="auth-main">
-      <button class="auth-btn google" onclick="signInGoogle()">
-        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      <button class="a-btn google" onclick="signInGoogle()">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
         Continue with Google
       </button>
-      <button class="auth-btn email" onclick="showEmailForm()">
-        ✉️ Continue with Email
-      </button>
-      <div class="auth-divider">or</div>
-      <button class="auth-btn guest" onclick="continueAsGuest()">
-        👤 Continue as Guest
-      </button>
-      <div class="guest-limit">⚠️ Guest mode: 2 CVs per week, no cloud sync</div>
+      <button class="a-btn email" onclick="showEmailForm()">✉️ Continue with Email</button>
+      <div class="a-div">or</div>
+      <button class="a-btn guest" onclick="guestMode()">👤 Guest Mode</button>
+      <div class="guest-note">⚠️ Guest: 2 CVs/week · No cloud sync</div>
     </div>
-
-    <div id="auth-email-form" class="auth-form">
-      <button class="auth-back" onclick="showAuthMain()">← Back</button>
-      <input type="email" id="email-input" class="auth-input" placeholder="Email address">
-      <input type="password" id="password-input" class="auth-input" placeholder="Password">
-      <button class="auth-btn email" onclick="signInEmail()" style="margin-top:4px;">Sign In / Sign Up</button>
+    <div id="auth-email" class="a-form">
+      <button class="a-back" onclick="backAuth()">← Back</button>
+      <input type="email" id="ei" class="a-inp" placeholder="Email address">
+      <input type="password" id="pi" class="a-inp" placeholder="Password">
+      <button class="a-btn email" onclick="emailAuth()">Sign In / Create Account</button>
     </div>
   </div>
 </div>
 
-<!-- ===== SIDEBAR ===== -->
-<div id="sidebar-overlay" onclick="closeSidebar()"></div>
-<div id="sidebar" class="hidden">
-  <div class="sidebar-header">
-    <div class="logo">MakeCV <span>AI Powered CV Builder</span></div>
-  </div>
-  <div class="sidebar-user">
-    <div class="avatar" id="sidebar-avatar">?</div>
-    <div class="user-info">
-      <div class="user-name" id="sidebar-name">Loading...</div>
-      <div class="user-plan" id="sidebar-plan">Free</div>
+<!-- MAIN APP -->
+<div id="app" style="display:none;">
+  <!-- TITLE BAR -->
+  <div id="titlebar">
+    <div class="tb-logo">
+      <svg width="20" height="20" viewBox="0 0 48 48"><use href="#logo-icon"/></svg>
+      <div><div class="tb-logo-txt">MakeCV AI</div></div>
+    </div>
+    <div class="tb-menu">
+      <div class="tb-menu-item active" onclick="switchTab('editor',this)" id="tab-editor">Editor</div>
+      <div class="tb-menu-item" onclick="switchTab('ai',this)" id="tab-ai">🤖 AI Generate</div>
+      <div class="tb-menu-item" onclick="switchTab('history',this)" id="tab-hist">History</div>
+    </div>
+    <div class="tb-spacer"></div>
+    <div class="tb-actions">
+      <button class="tb-btn" onclick="dlPDF()">⬇ PDF</button>
+      <button class="tb-btn" onclick="window.print()">🖨 Print</button>
+      <button class="tb-btn save" onclick="saveCV()">💾 Save</button>
+      <div class="tb-avatar" id="tb-av" onclick="doLogout()" title="Sign Out">?</div>
     </div>
   </div>
-  <div class="sidebar-nav">
-    <button class="new-cv-btn" onclick="showCreateScreen()">
-      ＋ Create New CV
-    </button>
-    <div class="nav-label">History</div>
-    <div id="history-list">
-      <div style="color:var(--text3);font-size:0.78rem;padding:8px;">No CVs yet. Create your first!</div>
+
+  <!-- RIBBON -->
+  <div id="ribbon">
+    <div class="rb-tab active" onclick="showSection('personal',this)">👤 Personal</div>
+    <div class="rb-tab" onclick="showSection('experience',this)">💼 Experience</div>
+    <div class="rb-tab" onclick="showSection('education',this)">🎓 Education</div>
+    <div class="rb-tab" onclick="showSection('skills',this)">⚡ Skills</div>
+    <div class="rb-tab" onclick="showSection('languages',this)">🌐 Languages</div>
+    <div class="rb-tab" onclick="showSection('certifications',this)">🏆 Certifications</div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <div class="sb-head">Sections</div>
+    <div class="sb-nav" id="sb-nav">
+      <div class="sb-item active" onclick="showSection('personal',null,'sb')" id="sb-personal"><span class="sb-item-icon">👤</span>Personal Info</div>
+      <div class="sb-item" onclick="showSection('experience',null,'sb')" id="sb-experience"><span class="sb-item-icon">💼</span>Experience</div>
+      <div class="sb-item" onclick="showSection('education',null,'sb')" id="sb-education"><span class="sb-item-icon">🎓</span>Education</div>
+      <div class="sb-item" onclick="showSection('skills',null,'sb')" id="sb-skills"><span class="sb-item-icon">⚡</span>Skills</div>
+      <div class="sb-item" onclick="showSection('languages',null,'sb')" id="sb-languages"><span class="sb-item-icon">🌐</span>Languages</div>
+      <div class="sb-item" onclick="showSection('certifications',null,'sb')" id="sb-certifications"><span class="sb-item-icon">🏆</span>Certifications</div>
+      <div class="sb-divider"></div>
+      <div class="sb-item" onclick="switchTab('ai',document.getElementById('tab-ai'))"><span class="sb-item-icon">🤖</span>AI Generate</div>
+      <div class="sb-item" onclick="switchTab('history',document.getElementById('tab-hist'))"><span class="sb-item-icon">🕐</span>History</div>
     </div>
   </div>
-  <div class="sidebar-footer">
-    <button class="logout-btn" onclick="logOut()">Sign Out</button>
-  </div>
-</div>
 
-<!-- ===== MAIN ===== -->
-<div id="main" class="full">
-  <div class="topbar">
-    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
-    <div class="topbar-title" id="topbar-title">MakeCV AI</div>
-  </div>
-
-  <!-- CREATE SCREEN -->
-  <div id="create-screen" style="display:none;">
-    <div class="screen-title">Build Your CV ✨</div>
-    <div class="screen-subtitle">Upload documents or type your info — AI does the rest in under 1 minute</div>
-
-    <!-- Upload Zone -->
-    <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()"
-         ondragover="handleDragOver(event)" ondrop="handleDrop(event)" ondragleave="handleDragLeave(event)">
-      <div class="upload-icon">📎</div>
-      <div class="upload-title">Drop your documents here</div>
-      <div class="upload-sub">Old CV, certificates, degrees, CNIC — AI will extract everything</div>
-      <div class="upload-types">PDF • JPG • PNG • DOC</div>
+  <!-- EDITOR -->
+  <div id="editor">
+    <div class="ed-topbar">
+      <div class="ed-section-title" id="ed-title">👤 Personal Info <span class="ed-badge">SECTION 1/6</span></div>
+      <div class="ed-spacer"></div>
+      <button class="ed-nav-btn" onclick="prevSection()">← Prev</button>
+      <button class="ed-nav-btn pri" onclick="nextSection()">Next →</button>
     </div>
-    <input type="file" id="file-input" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" onchange="handleFileSelect(event)">
+    <div class="ed-body" id="ed-body"></div>
+  </div>
 
-    <div id="uploaded-files-list" class="uploaded-files"></div>
-
-    <div class="or-divider">or type / speak your info</div>
-
-    <!-- Text Input -->
-    <div class="input-area">
-      <textarea id="cv-input" placeholder="Type anything... e.g. 'Main Muhammad Ali hun, 3 saal ka experience hai software development mein, Python aur React aata hai, FAST se CS kiya hai 2021 mein' — Urdu, English, Hinglish sab chalega ✓"></textarea>
-      <div class="input-hints">
-        <div class="hint-chip" onclick="addHint('Fresh graduate, Computer Science')">🎓 Fresh Graduate</div>
-        <div class="hint-chip" onclick="addHint('2-3 years experience in ')">💼 Early Career</div>
-        <div class="hint-chip" onclick="addHint('Senior developer with 8+ years')">🚀 Senior</div>
-        <div class="hint-chip" onclick="addHint('Freelancer specializing in ')">🖥️ Freelancer</div>
-        <div class="hint-chip" onclick="addHint('Career change from ')">🔄 Career Change</div>
+  <!-- PREVIEW -->
+  <div id="preview">
+    <div class="pv-head">
+      <div class="pv-title">👁 Live Preview</div>
+      <div class="pv-btns">
+        <button class="pv-btn pri" onclick="dlPDF()">⬇ PDF</button>
       </div>
     </div>
-
-    <!-- Target Job -->
-    <div class="input-area" style="margin-bottom:20px;">
-      <div style="font-size:0.78rem;color:var(--text2);margin-bottom:8px;font-weight:500;">🎯 Target Job Role (optional but recommended)</div>
-      <input type="text" id="target-job" placeholder="e.g. Software Engineer, Marketing Manager, Data Analyst..."
-             style="width:100%;background:none;border:none;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.88rem;">
+    <div class="tpl-bar">
+      <div class="tpl-chip sel" onclick="setTpl('modern',this)">Modern</div>
+      <div class="tpl-chip" onclick="setTpl('classic',this)">Classic</div>
+      <div class="tpl-chip" onclick="setTpl('minimal',this)">Minimal</div>
+      <div class="tpl-chip" onclick="setTpl('executive',this)">Executive</div>
     </div>
-
-    <!-- Template Selection -->
-    <div class="template-section">
-      <div class="section-label">
-        Template <span class="ai-badge">AI PICKS BEST</span>
-      </div>
-      <div class="templates-grid">
-        <div class="template-card t-ai selected" data-template="auto" onclick="selectTemplate(this,'auto')">
-          <div class="template-preview">
-            <div class="tp-line" style="width:60%"></div>
-            <div class="tp-line" style="width:40%"></div>
-            <div class="tp-line" style="width:80%"></div>
-            <div class="tp-line" style="width:50%"></div>
-          </div>
-          <div class="template-name">🤖 Auto AI</div>
-        </div>
-        <div class="template-card t-modern" data-template="modern" onclick="selectTemplate(this,'modern')">
-          <div class="template-preview">
-            <div class="tp-line" style="width:70%"></div>
-            <div class="tp-line" style="width:45%"></div>
-            <div class="tp-line" style="width:90%"></div>
-          </div>
-          <div class="template-name">Modern</div>
-        </div>
-        <div class="template-card t-classic" data-template="classic" onclick="selectTemplate(this,'classic')">
-          <div class="template-preview">
-            <div class="tp-line" style="width:60%"></div>
-            <div class="tp-line" style="width:80%"></div>
-            <div class="tp-line" style="width:50%"></div>
-          </div>
-          <div class="template-name">Classic</div>
-        </div>
-        <div class="template-card t-minimal" data-template="minimal" onclick="selectTemplate(this,'minimal')">
-          <div class="template-preview">
-            <div class="tp-line" style="width:55%"></div>
-            <div class="tp-line" style="width:35%"></div>
-            <div class="tp-line" style="width:70%"></div>
-          </div>
-          <div class="template-name">Minimal</div>
-        </div>
-        <div class="template-card t-creative" data-template="creative" onclick="selectTemplate(this,'creative')">
-          <div class="template-preview">
-            <div class="tp-line" style="width:65%"></div>
-            <div class="tp-line" style="width:45%"></div>
-            <div class="tp-line" style="width:85%"></div>
-          </div>
-          <div class="template-name">Creative</div>
-        </div>
-      </div>
-    </div>
-
-    <button class="generate-btn" id="generate-btn" onclick="generateCV()">
-      ✨ Generate My Professional CV
-    </button>
-  </div>
-
-  <!-- LOADING SCREEN -->
-  <div id="loading-screen" style="display:none;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;gap:24px;">
-    <div class="loading-spinner"></div>
-    <div style="font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;">Building Your CV...</div>
-    <div class="loading-steps" id="loading-steps">
-      <div class="loading-step" id="step-1"><div class="step-dot"></div> Reading your documents</div>
-      <div class="loading-step" id="step-2"><div class="step-dot"></div> Extracting your information</div>
-      <div class="loading-step" id="step-3"><div class="step-dot"></div> Writing professional content</div>
-      <div class="loading-step" id="step-4"><div class="step-dot"></div> Analyzing ATS compatibility</div>
-      <div class="loading-step" id="step-5"><div class="step-dot"></div> Selecting best template</div>
-      <div class="loading-step" id="step-6"><div class="step-dot"></div> Finalizing your CV</div>
-    </div>
-  </div>
-
-  <!-- RESULT SCREEN -->
-  <div id="result-screen" style="display:none;padding:24px;max-width:1100px;margin:0 auto;">
-    <div class="result-layout">
-      <!-- Left: CV Preview -->
-      <div class="cv-preview-wrapper">
-        <div class="cv-preview-header">
-          <div class="cv-preview-title">📄 Your CV Preview</div>
-          <div class="cv-actions">
-            <button class="action-btn" onclick="showCreateScreen()">← Edit</button>
-            <button class="action-btn" onclick="downloadPDF()">⬇ Download PDF</button>
-            <button class="action-btn primary" onclick="printCV()">🖨️ Print</button>
-          </div>
-        </div>
-        <div id="cv-render-area"></div>
-      </div>
-
-      <!-- Right: Panel -->
-      <div class="result-panel">
-        <!-- ATS Score -->
-        <div class="panel-card">
-          <div class="panel-card-title">📊 ATS Score</div>
-          <div class="ats-score-ring">
-            <div class="ats-circle" id="ats-circle" style="--score:0">
-              <div class="ats-number" id="ats-number">0</div>
-            </div>
-            <div>
-              <div class="ats-label" id="ats-label">Analyzing...</div>
-              <div class="ats-sub">Out of 100</div>
-            </div>
-          </div>
-          <div id="ats-improvements"></div>
-        </div>
-
-        <!-- Missing Documents -->
-        <div class="panel-card">
-          <div class="panel-card-title">📋 Missing Documents</div>
-          <div id="missing-docs-list">
-            <div style="color:var(--text3);font-size:0.78rem;">Analyzing your profile...</div>
-          </div>
-        </div>
-
-        <!-- Quick Edit -->
-        <div class="panel-card">
-          <div class="panel-card-title">✏️ Quick Edit</div>
-          <div class="edit-field">
-            <div class="edit-label">Full Name</div>
-            <input type="text" id="edit-name" class="edit-input" placeholder="Your name">
-          </div>
-          <div class="edit-field">
-            <div class="edit-label">Job Title</div>
-            <input type="text" id="edit-title" class="edit-input" placeholder="Your title">
-          </div>
-          <div class="edit-field">
-            <div class="edit-label">Email</div>
-            <input type="text" id="edit-email" class="edit-input" placeholder="Email">
-          </div>
-          <div class="edit-field">
-            <div class="edit-label">Phone</div>
-            <input type="text" id="edit-phone" class="edit-input" placeholder="Phone">
-          </div>
-          <button class="save-edit-btn" onclick="applyQuickEdit()">Update CV</button>
-        </div>
+    <div class="pv-body" id="pv-body">
+      <div class="cv-scale-wrap" id="cv-scale">
+        <div id="cv-doc" class="cv-doc modern"></div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- DELETE MODAL -->
-<div class="modal-overlay" id="delete-modal">
+<div id="load-overlay"><div class="spin"></div><div class="load-txt" id="load-txt">Loading...</div></div>
+<div class="overlay" id="del-modal">
   <div class="modal">
-    <div class="modal-title">Delete CV?</div>
-    <div class="modal-text">This action cannot be undone. Your CV will be permanently deleted.</div>
-    <div class="modal-actions">
-      <button class="modal-btn" onclick="closeModal('delete-modal')">Cancel</button>
-      <button class="modal-btn danger" onclick="confirmDelete()">Delete</button>
+    <div class="modal-t">Delete CV?</div>
+    <div class="modal-txt">This cannot be undone.</div>
+    <div class="modal-btns">
+      <button class="m-btn" onclick="closeModal()">Cancel</button>
+      <button class="m-btn danger" onclick="doDelete()">Delete</button>
     </div>
   </div>
 </div>
-
-<!-- TOAST -->
 <div id="toast"></div>
+<input type="file" id="file-input" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" style="display:none" onchange="onFileSelect(event)">
+<input type="file" id="photo-input" accept="image/*" style="display:none" onchange="onPhotoSelect(event)">
 
-<!-- ===== FIREBASE ===== -->
+<!-- FIREBASE -->
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-analytics.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy, where, updateDoc } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-storage.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyCxaAHEbU1FuwJ7NRUQyq1nMSo_T0cFnk8",
-  authDomain: "make-cv-with-ai.firebaseapp.com",
-  projectId: "make-cv-with-ai",
-  storageBucket: "make-cv-with-ai.firebasestorage.app",
-  messagingSenderId: "667942276737",
-  appId: "1:667942276737:web:e1be40a4ae3e6518afc780",
-  measurementId: "G-LLTL9KVG56"
-};
-
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const storage = getStorage(app);
-
-// Expose globally
-window._auth = auth;
-window._db = db;
-window._storage = storage;
-window._GoogleAuthProvider = GoogleAuthProvider;
-window._signInWithPopup = signInWithPopup;
-window._createUserWithEmailAndPassword = createUserWithEmailAndPassword;
-window._signInWithEmailAndPassword = signInWithEmailAndPassword;
-window._signOut = signOut;
-window._collection = collection;
-window._addDoc = addDoc;
-window._getDocs = getDocs;
-window._deleteDoc = deleteDoc;
-window._doc = doc;
-window._query = query;
-window._orderBy = orderBy;
-window._where = where;
-window._updateDoc = updateDoc;
-window._ref = ref;
-window._uploadBytes = uploadBytes;
-window._getDownloadURL = getDownloadURL;
-
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    window._currentUser = user;
-    window._isGuest = false;
-    showApp(user);
-  } else if (!window._guestMode) {
-    showAuthScreen();
-  }
+import{initializeApp}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+import{getAuth,GoogleAuthProvider,signInWithPopup,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+import{getFirestore,collection,addDoc,getDocs,deleteDoc,doc,query,orderBy,where,getDoc}from"https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyCxaAHEbU1FuwJ7NRUQyq1nMSo_T0cFnk8",authDomain:"make-cv-with-ai.firebaseapp.com",projectId:"make-cv-with-ai",storageBucket:"make-cv-with-ai.firebasestorage.app",messagingSenderId:"667942276737",appId:"1:667942276737:web:e1be40a4ae3e6518afc780",measurementId:"G-LLTL9KVG56"};
+const app=initializeApp(cfg);
+const auth=getAuth(app);const db=getFirestore(app);
+window._A=auth;window._D=db;
+window._GP=GoogleAuthProvider;window._SIP=signInWithPopup;
+window._CEP=createUserWithEmailAndPassword;window._SIEP=signInWithEmailAndPassword;
+window._SO=signOut;
+window._col=collection;window._add=addDoc;window._get=getDocs;
+window._del=deleteDoc;window._dref=doc;window._q=query;
+window._ob=orderBy;window._wh=where;window._gd=getDoc;
+onAuthStateChanged(auth,u=>{
+  if(u){window._cu=u;window._guest=false;initApp(u);}
+  else if(!window._gm){showAuth();}
 });
 </script>
 
 <script>
-// ===== CONFIG =====
-const GROQ_KEY = "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";
-const GEMINI_KEY = "AQ.Ab8RN6LUUfwX2hCBuWWlaxMj8dM0qqRIxksJLwq9YMMyt2678g";
-
-// ===== STATE =====
-let currentUser = null;
-let isGuest = false;
-let uploadedFiles = [];
-let selectedTemplate = 'auto';
-let currentCVData = null;
-let deleteTargetId = null;
-let cvHistory = [];
-
-// ===== AUTH FUNCTIONS =====
-function showAuthScreen() {
-  document.getElementById('auth-screen').style.display = 'flex';
-  document.getElementById('main').style.display = 'none';
-  document.getElementById('sidebar').classList.add('hidden');
+let GMK='';
+async function loadKeys(){
+  try{
+    const ref=window._dref(window._D,'config','keys');
+    const snap=await window._gd(ref);
+    if(snap.exists()){GMK=snap.data().gemini||'';console.log('Keys loaded ✅');}
+    else{console.warn('No keys doc found');}
+  }catch(e){console.error('loadKeys error:',e.message);}
 }
 
-function showApp(user) {
-  currentUser = user;
-  document.getElementById('auth-screen').style.display = 'none';
-  document.getElementById('main').style.display = 'block';
-  document.getElementById('sidebar').classList.remove('hidden');
-  document.getElementById('main').classList.remove('full');
+// CV DATA
+let cv={
+  photo:'',
+  personal:{name:'',title:'',email:'',phone:'',location:'',linkedin:'',website:'',summary:''},
+  experience:[{id:1,title:'',company:'',start:'',end:'',bullets:['']}],
+  education:[{id:1,degree:'',school:'',year:'',grade:''}],
+  skills:[],
+  languages:[{id:1,lang:'',level:'Fluent'}],
+  certifications:[{id:1,name:'',issuer:'',year:''}],
+};
 
-  const name = user.displayName || user.email || 'User';
-  document.getElementById('sidebar-name').textContent = name;
-  document.getElementById('sidebar-avatar').textContent = name.charAt(0).toUpperCase();
-  document.getElementById('sidebar-plan').textContent = isGuest ? 'Guest Mode' : 'Free Plan';
+let tpl='modern',curSec='personal',_user=null,_guest=false,_hist=[],_delId=null,_files=[];
+const SECS=['personal','experience','education','skills','languages','certifications'];
+const SEC_LABELS={personal:'👤 Personal Info',experience:'💼 Experience',education:'🎓 Education',skills:'⚡ Skills',languages:'🌐 Languages',certifications:'🏆 Certifications'};
 
-  showCreateScreen();
-  loadHistory();
+// AUTH
+function showAuth(){
+  document.getElementById('auth-screen').style.display='flex';
+  document.getElementById('app').style.display='none';
 }
+async function initApp(u){
+  _user=u;
+  document.getElementById('auth-screen').style.display='none';
+  document.getElementById('app').style.display='grid';
+  const n=(u.displayName||u.email||'U')[0].toUpperCase();
+  document.getElementById('tb-av').textContent=n;
+  await loadKeys();
+  showSection('personal');
+  updatePreview();
+  loadHist();
+}
+window.signInGoogle=async function(){
+  try{await window._SIP(window._A,new window._GP());}
+  catch(e){toast('Google sign-in failed','err');}
+};
+window.showEmailForm=function(){document.getElementById('auth-main').style.display='none';document.getElementById('auth-email').classList.add('on');};
+window.backAuth=function(){document.getElementById('auth-main').style.display='block';document.getElementById('auth-email').classList.remove('on');};
+window.emailAuth=async function(){
+  const e=document.getElementById('ei').value.trim(),p=document.getElementById('pi').value;
+  if(!e||!p){toast('Enter email & password','err');return;}
+  try{
+    try{await window._SIEP(window._A,e,p);}
+    catch(ex){if(ex.code==='auth/user-not-found'||ex.code==='auth/invalid-credential'){await window._CEP(window._A,e,p);}else throw ex;}
+  }catch(e){toast(e.message,'err');}
+};
+window.guestMode=function(){_guest=true;window._gm=true;initApp({displayName:'Guest',email:'guest',uid:'g_'+Date.now()});};
+window.doLogout=function(){if(confirm('Sign out?')){if(_guest){_guest=false;window._gm=false;showAuth();}else{window._SO(window._A).then(()=>showAuth());}}};
 
-window.signInGoogle = async function() {
-  try {
-    const provider = new window._GoogleAuthProvider();
-    await window._signInWithPopup(window._auth, provider);
-  } catch(e) {
-    showToast('Google sign-in failed: ' + e.message, 'error');
+// TABS
+window.switchTab=function(t,el){
+  document.querySelectorAll('.tb-menu-item').forEach(x=>x.classList.remove('active'));
+  el.classList.add('active');
+  if(t==='editor'){showSection(curSec);}
+  else if(t==='ai'){renderAI();}
+  else if(t==='history'){renderHistPanel();}
+};
+
+// SECTIONS
+window.showSection=function(id,rbEl,from){
+  curSec=id;
+  // Update ribbon tabs
+  if(rbEl){document.querySelectorAll('.rb-tab').forEach(t=>t.classList.remove('active'));rbEl.classList.add('active');}
+  else{
+    const tabs=document.querySelectorAll('.rb-tab');
+    const idx=SECS.indexOf(id);
+    tabs.forEach(t=>t.classList.remove('active'));
+    if(tabs[idx])tabs[idx].classList.add('active');
   }
+  // Update sidebar
+  SECS.forEach(s=>{const el=document.getElementById('sb-'+s);if(el){el.classList.remove('active');if(s===id)el.classList.add('active');}});
+  // Update topbar title
+  const idx=SECS.indexOf(id);
+  document.getElementById('ed-title').innerHTML=`${SEC_LABELS[id]} <span class="ed-badge">SECTION ${idx+1}/${SECS.length}</span>`;
+  // Render content
+  const body=document.getElementById('ed-body');
+  body.innerHTML='';
+  if(id==='personal')renderPersonal(body);
+  else if(id==='experience')renderExperience(body);
+  else if(id==='education')renderEducation(body);
+  else if(id==='skills')renderSkills(body);
+  else if(id==='languages')renderLanguages(body);
+  else if(id==='certifications')renderCertifications(body);
+  // Make sure editor tab is active in titlebar
+  document.querySelectorAll('.tb-menu-item').forEach(x=>x.classList.remove('active'));
+  document.getElementById('tab-editor').classList.add('active');
 };
+window.prevSection=function(){const i=SECS.indexOf(curSec);if(i>0)showSection(SECS[i-1]);};
+window.nextSection=function(){const i=SECS.indexOf(curSec);if(i<SECS.length-1)showSection(SECS[i+1]);};
 
-window.showEmailForm = function() {
-  document.getElementById('auth-main').style.display = 'none';
-  document.getElementById('auth-email-form').classList.add('active');
-};
-
-window.showAuthMain = function() {
-  document.getElementById('auth-main').style.display = 'block';
-  document.getElementById('auth-email-form').classList.remove('active');
-};
-
-window.signInEmail = async function() {
-  const email = document.getElementById('email-input').value.trim();
-  const password = document.getElementById('password-input').value;
-  if (!email || !password) { showToast('Enter email and password', 'error'); return; }
-  try {
-    try {
-      await window._signInWithEmailAndPassword(window._auth, email, password);
-    } catch(e) {
-      if (e.code === 'auth/user-not-found' || e.code === 'auth/invalid-credential') {
-        await window._createUserWithEmailAndPassword(window._auth, email, password);
-      } else throw e;
-    }
-  } catch(e) {
-    showToast('Auth error: ' + e.message, 'error');
-  }
-};
-
-window.continueAsGuest = function() {
-  isGuest = true;
-  window._guestMode = true;
-  const guestUser = { displayName: 'Guest', email: 'guest', uid: 'guest_' + Date.now() };
-  showApp(guestUser);
-};
-
-window.logOut = async function() {
-  if (isGuest) {
-    isGuest = false;
-    window._guestMode = false;
-    showAuthScreen();
-    return;
-  }
-  try {
-    await window._signOut(window._auth);
-    showAuthScreen();
-  } catch(e) {
-    showToast('Error signing out', 'error');
-  }
-};
-
-// ===== SIDEBAR =====
-window.toggleSidebar = function() {
-  const sb = document.getElementById('sidebar');
-  const ov = document.getElementById('sidebar-overlay');
-  sb.classList.toggle('mobile-open');
-  ov.classList.toggle('active');
-};
-
-window.closeSidebar = function() {
-  document.getElementById('sidebar').classList.remove('mobile-open');
-  document.getElementById('sidebar-overlay').classList.remove('active');
-};
-
-// ===== SCREENS =====
-window.showCreateScreen = function() {
-  document.getElementById('create-screen').style.display = 'block';
-  document.getElementById('loading-screen').style.display = 'none';
-  document.getElementById('result-screen').style.display = 'none';
-  document.getElementById('topbar-title').textContent = 'Create New CV';
-  closeSidebar();
-};
-
-function showLoadingScreen() {
-  document.getElementById('create-screen').style.display = 'none';
-  document.getElementById('loading-screen').style.display = 'flex';
-  document.getElementById('result-screen').style.display = 'none';
-  // Reset steps
-  for (let i = 1; i <= 6; i++) {
-    const el = document.getElementById('step-' + i);
-    el.classList.remove('active', 'done');
-  }
-}
-
-function showResultScreen() {
-  document.getElementById('create-screen').style.display = 'none';
-  document.getElementById('loading-screen').style.display = 'none';
-  document.getElementById('result-screen').style.display = 'block';
-  document.getElementById('topbar-title').textContent = 'Your CV';
-}
-
-async function animateStep(stepNum, delay = 0) {
-  await sleep(delay);
-  const prev = document.getElementById('step-' + (stepNum - 1));
-  if (prev) { prev.classList.remove('active'); prev.classList.add('done'); }
-  const cur = document.getElementById('step-' + stepNum);
-  if (cur) cur.classList.add('active');
-}
-
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-// ===== FILE HANDLING =====
-window.handleDragOver = function(e) {
-  e.preventDefault();
-  document.getElementById('upload-zone').classList.add('dragover');
-};
-
-window.handleDragLeave = function() {
-  document.getElementById('upload-zone').classList.remove('dragover');
-};
-
-window.handleDrop = function(e) {
-  e.preventDefault();
-  document.getElementById('upload-zone').classList.remove('dragover');
-  handleFiles(e.dataTransfer.files);
-};
-
-window.handleFileSelect = function(e) {
-  handleFiles(e.target.files);
-};
-
-function handleFiles(files) {
-  Array.from(files).forEach(f => {
-    uploadedFiles.push(f);
-    renderFilesChips();
-  });
-}
-
-function renderFilesChips() {
-  const container = document.getElementById('uploaded-files-list');
-  container.innerHTML = uploadedFiles.map((f, i) => `
-    <div class="file-chip">
-      ${getFileIcon(f.type)} ${f.name.substring(0,25)}${f.name.length > 25 ? '...' : ''}
-      <button onclick="removeFile(${i})">✕</button>
+// PERSONAL
+function renderPersonal(body){
+  body.innerHTML=`
+  <div class="photo-row">
+    <div class="photo-box" onclick="document.getElementById('photo-input').click()" id="photo-box">
+      ${cv.photo?`<img src="${cv.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:6px;">`:`<div style="font-size:1.8rem;">📷</div><div class="photo-lbl">Click to add photo</div>`}
     </div>
-  `).join('');
+    <div style="flex:1;">
+      <div class="info-grid">
+        ${ir('👤','Full Name','name','text','Muhammad Ali Khan')}
+        ${ir('💼','Job Title','title','text','Software Engineer')}
+        ${ir('✉️','Email','email','email','ali@example.com')}
+        ${ir('📱','Phone','phone','tel','+92 300 1234567')}
+        ${ir('📍','Location','location','text','Karachi, Pakistan')}
+        ${ir('🔗','LinkedIn','linkedin','url','linkedin.com/in/username')}
+        ${ir('🌐','Website','website','url','yourwebsite.com')}
+      </div>
+    </div>
+  </div>
+  <div class="summ-wrap">
+    <div class="field-lbl">📝 Professional Summary</div>
+    <textarea class="summ-inp" rows="4" placeholder="A compelling 2-3 line summary of your professional background and goals..." oninput="cv.personal.summary=this.value;updatePreview()">${cv.personal.summary}</textarea>
+  </div>`;
 }
-
-function getFileIcon(type) {
-  if (type.includes('pdf')) return '📄';
-  if (type.includes('image')) return '🖼️';
-  if (type.includes('word') || type.includes('doc')) return '📝';
-  return '📎';
+function ir(icon,label,key,type,ph){
+  return `<div class="info-row-wrap">
+    <div class="info-lbl">${icon} ${label}</div>
+    <div class="info-cell"><input type="${type}" value="${cv.personal[key]||''}" placeholder="${ph}" oninput="cv.personal['${key}']=this.value;updatePreview()"></div>
+  </div>`;
 }
-
-window.removeFile = function(i) {
-  uploadedFiles.splice(i, 1);
-  renderFilesChips();
+window.onPhotoSelect=function(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{cv.photo=ev.target.result;updatePreview();
+    const b=document.getElementById('photo-box');
+    if(b)b.innerHTML=`<img src="${cv.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:6px;">`;
+  };r.readAsDataURL(f);
 };
 
-// ===== TEMPLATE =====
-window.selectTemplate = function(el, t) {
-  document.querySelectorAll('.template-card').forEach(c => c.classList.remove('selected'));
-  el.classList.add('selected');
-  selectedTemplate = t;
-};
+// EXPERIENCE
+function renderExperience(body){
+  body.innerHTML=`<div class="xl-wrap">
+    <table class="xl-tbl">
+      <thead><tr>
+        <th class="rn">#</th>
+        <th style="min-width:150px">Job Title</th>
+        <th style="min-width:130px">Company</th>
+        <th style="width:85px">Start</th>
+        <th style="width:85px">End</th>
+        <th>Achievements (one per line)</th>
+        <th class="act-col">×</th>
+      </tr></thead>
+      <tbody id="exp-tb"></tbody>
+    </table>
+    <div class="add-row" onclick="addExp()">＋ Add Row</div>
+  </div>`;
+  renderExpRows();
+}
+function renderExpRows(){
+  const tb=document.getElementById('exp-tb');if(!tb)return;
+  tb.innerHTML=cv.experience.map((e,i)=>`<tr>
+    <td class="rn">${i+1}</td>
+    <td><textarea class="cell-inp" rows="2" placeholder="Software Engineer" oninput="cv.experience[${i}].title=this.value;updatePreview()">${e.title||''}</textarea></td>
+    <td><textarea class="cell-inp" rows="2" placeholder="Company Ltd" oninput="cv.experience[${i}].company=this.value;updatePreview()">${e.company||''}</textarea></td>
+    <td><input class="cell-inp" value="${e.start||''}" placeholder="Jan 2022" oninput="cv.experience[${i}].start=this.value;updatePreview()"></td>
+    <td><input class="cell-inp" value="${e.end||''}" placeholder="Present" oninput="cv.experience[${i}].end=this.value;updatePreview()"></td>
+    <td><textarea class="cell-inp" rows="3" placeholder="Led team of 5 engineers&#10;Reduced load time by 40%&#10;Built REST APIs serving 10k users" oninput="cv.experience[${i}].bullets=this.value.split('\\n');updatePreview()">${(e.bullets||['']).join('\n')}</textarea></td>
+    <td class="act-col"><button class="del-btn" onclick="delExp(${i})">✕</button></td>
+  </tr>`).join('');
+}
+window.addExp=function(){cv.experience.push({id:Date.now(),title:'',company:'',start:'',end:'',bullets:['']});renderExpRows();};
+window.delExp=function(i){if(cv.experience.length>1){cv.experience.splice(i,1);renderExpRows();updatePreview();}else toast('Need at least 1 row','err');};
 
-window.addHint = function(text) {
-  const ta = document.getElementById('cv-input');
-  ta.value += (ta.value ? ' ' : '') + text;
-  ta.focus();
-};
+// EDUCATION
+function renderEducation(body){
+  body.innerHTML=`<div class="xl-wrap">
+    <table class="xl-tbl">
+      <thead><tr>
+        <th class="rn">#</th>
+        <th style="min-width:170px">Degree</th>
+        <th style="min-width:150px">School / University</th>
+        <th style="width:80px">Year</th>
+        <th>Grade / CGPA</th>
+        <th class="act-col">×</th>
+      </tr></thead>
+      <tbody id="edu-tb"></tbody>
+    </table>
+    <div class="add-row" onclick="addEdu()">＋ Add Row</div>
+  </div>`;
+  renderEduRows();
+}
+function renderEduRows(){
+  const tb=document.getElementById('edu-tb');if(!tb)return;
+  tb.innerHTML=cv.education.map((e,i)=>`<tr>
+    <td class="rn">${i+1}</td>
+    <td><input class="cell-inp" value="${e.degree||''}" placeholder="BS Computer Science" oninput="cv.education[${i}].degree=this.value;updatePreview()"></td>
+    <td><input class="cell-inp" value="${e.school||''}" placeholder="FAST University" oninput="cv.education[${i}].school=this.value;updatePreview()"></td>
+    <td><input class="cell-inp" value="${e.year||''}" placeholder="2022" oninput="cv.education[${i}].year=this.value;updatePreview()"></td>
+    <td><input class="cell-inp" value="${e.grade||''}" placeholder="3.8/4.0" oninput="cv.education[${i}].grade=this.value;updatePreview()"></td>
+    <td class="act-col"><button class="del-btn" onclick="delEdu(${i})">✕</button></td>
+  </tr>`).join('');
+}
+window.addEdu=function(){cv.education.push({id:Date.now(),degree:'',school:'',year:'',grade:''});renderEduRows();};
+window.delEdu=function(i){if(cv.education.length>1){cv.education.splice(i,1);renderEduRows();updatePreview();}};
 
-// ===== FILE TO BASE64 =====
-async function fileToBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result.split(',')[1]);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
+// SKILLS
+function renderSkills(body){
+  body.innerHTML=`<div class="xl-wrap">
+    <div class="field-lbl" style="margin-bottom:8px;">Skills Preview</div>
+    <div class="skills-cloud" id="sk-cloud" style="margin-bottom:14px;">${skTagsHTML()}</div>
+    <table class="xl-tbl">
+      <thead><tr>
+        <th class="rn">#</th>
+        <th>Skill Name</th>
+        <th style="width:140px">Category</th>
+        <th style="width:120px">Level</th>
+        <th class="act-col">×</th>
+      </tr></thead>
+      <tbody id="sk-tb"></tbody>
+    </table>
+    <div class="add-row" onclick="addSkill()">＋ Add Skill</div>
+  </div>`;
+  renderSkillRows();
+}
+function skTagsHTML(){
+  return cv.skills.map((s,i)=>{const nm=typeof s==='object'?s.name:s;return `<div class="sk-tag">${nm}<button onclick="delSkill(${i})">✕</button></div>`;}).join('')||'<span style="color:var(--t3);font-size:.72rem;">No skills added yet</span>';
+}
+function renderSkillRows(){
+  const tb=document.getElementById('sk-tb');if(!tb)return;
+  tb.innerHTML=cv.skills.map((s,i)=>{
+    const sk=typeof s==='object'?s:{name:s,category:'Technical',level:'Advanced'};
+    return `<tr>
+      <td class="rn">${i+1}</td>
+      <td><input class="cell-inp" value="${sk.name||''}" placeholder="React.js" oninput="updSk(${i},'name',this.value)"></td>
+      <td><select class="cell-inp" onchange="updSk(${i},'category',this.value)" style="cursor:pointer">
+        <option ${sk.category==='Technical'?'selected':''}>Technical</option>
+        <option ${sk.category==='Soft'?'selected':''}>Soft</option>
+        <option ${sk.category==='Tools'?'selected':''}>Tools</option>
+        <option ${sk.category==='Design'?'selected':''}>Design</option>
+      </select></td>
+      <td><select class="cell-inp" onchange="updSk(${i},'level',this.value)" style="cursor:pointer">
+        <option ${sk.level==='Beginner'?'selected':''}>Beginner</option>
+        <option ${sk.level==='Intermediate'?'selected':''}>Intermediate</option>
+        <option ${sk.level==='Advanced'?'selected':''}>Advanced</option>
+        <option ${sk.level==='Expert'?'selected':''}>Expert</option>
+      </select></td>
+      <td class="act-col"><button class="del-btn" onclick="delSkill(${i})">✕</button></td>
+    </tr>`;
+  }).join('');
+}
+window.addSkill=function(){cv.skills.push({name:'',category:'Technical',level:'Intermediate'});renderSkillRows();};
+window.delSkill=function(i){cv.skills.splice(i,1);renderSkills(document.getElementById('ed-body'));updatePreview();};
+window.updSk=function(i,k,v){if(typeof cv.skills[i]==='string')cv.skills[i]={name:cv.skills[i],category:'Technical',level:'Advanced'};cv.skills[i][k]=v;const cl=document.getElementById('sk-cloud');if(cl)cl.innerHTML=skTagsHTML();updatePreview();};
+
+// LANGUAGES
+function renderLanguages(body){
+  body.innerHTML=`<div class="xl-wrap">
+    <table class="xl-tbl">
+      <thead><tr>
+        <th class="rn">#</th><th>Language</th>
+        <th style="width:170px">Proficiency</th>
+        <th class="act-col">×</th>
+      </tr></thead>
+      <tbody id="lang-tb"></tbody>
+    </table>
+    <div class="add-row" onclick="addLang()">＋ Add Language</div>
+  </div>`;
+  renderLangRows();
+}
+function renderLangRows(){
+  const tb=document.getElementById('lang-tb');if(!tb)return;
+  tb.innerHTML=cv.languages.map((l,i)=>`<tr>
+    <td class="rn">${i+1}</td>
+    <td><input class="cell-inp" value="${l.lang||''}" placeholder="English" oninput="cv.languages[${i}].lang=this.value;updatePreview()"></td>
+    <td><select class="cell-inp" onchange="cv.languages[${i}].level=this.value;updatePreview()" style="cursor:pointer">
+      ${['Native','Fluent','Advanced','Intermediate','Basic'].map(v=>`<option ${l.level===v?'selected':''}>${v}</option>`).join('')}
+    </select></td>
+    <td class="act-col"><button class="del-btn" onclick="delLang(${i})">✕</button></td>
+  </tr>`).join('');
+}
+window.addLang=function(){cv.languages.push({id:Date.now(),lang:'',level:'Fluent'});renderLangRows();};
+window.delLang=function(i){if(cv.languages.length>1){cv.languages.splice(i,1);renderLangRows();updatePreview();}};
+
+// CERTIFICATIONS
+function renderCertifications(body){
+  body.innerHTML=`<div class="xl-wrap">
+    <table class="xl-tbl">
+      <thead><tr>
+        <th class="rn">#</th><th>Certification</th>
+        <th style="min-width:140px">Issuer</th>
+        <th style="width:75px">Year</th>
+        <th>Credential ID</th>
+        <th class="act-col">×</th>
+      </tr></thead>
+      <tbody id="cert-tb"></tbody>
+    </table>
+    <div class="add-row" onclick="addCert()">＋ Add Certification</div>
+  </div>`;
+  renderCertRows();
+}
+function renderCertRows(){
+  const tb=document.getElementById('cert-tb');if(!tb)return;
+  tb.innerHTML=cv.certifications.map((c,i)=>`<tr>
+    <td class="rn">${i+1}</td>
+    <td><input class="cell-inp" value="${c.name||''}" placeholder="AWS Solutions Architect" oninput="cv.certifications[${i}].name=this.value;updatePreview()"></td>
+    <td><input class="cell-inp" value="${c.issuer||''}" placeholder="Amazon" oninput="cv.certifications[${i}].issuer=this.value;updatePreview()"></td>
+    <td><input class="cell-inp" value="${c.year||''}" placeholder="2023" oninput="cv.certifications[${i}].year=this.value;updatePreview()"></td>
+    <td><input class="cell-inp" value="${c.url||''}" placeholder="Credential ID or URL" oninput="cv.certifications[${i}].url=this.value"></td>
+    <td class="act-col"><button class="del-btn" onclick="delCert(${i})">✕</button></td>
+  </tr>`).join('');
+}
+window.addCert=function(){cv.certifications.push({id:Date.now(),name:'',issuer:'',year:'',url:''});renderCertRows();};
+window.delCert=function(i){cv.certifications.splice(i,1);renderCertRows();updatePreview();};
+
+// AI PANEL
+function renderAI(){
+  document.getElementById('ed-title').innerHTML='🤖 AI Generate <span class="ed-badge">GEMINI 1.5 FLASH</span>';
+  document.getElementById('ed-body').innerHTML=`
+  <div class="ai-wrap">
+    <div class="ai-card">
+      <div class="ai-card-title">🤖 Generate from Text <span class="ai-badge">GEMINI AI</span></div>
+      <div style="font-size:.72rem;color:var(--t3);margin-bottom:8px;">Type in any language — Urdu, English, Hinglish — AI understands all</div>
+      <textarea class="ai-ta" id="ai-txt" rows="5" placeholder="e.g. Main Ali hun, software engineer hun 3 saal experience hai React aur Node mein, FAST University se CS kiya 2022 mein Karachi mein rehta hun..."></textarea>
+      <div class="ai-row">
+        <span style="font-size:.7rem;color:var(--t3);white-space:nowrap;">🎯 Target Role:</span>
+        <input type="text" id="ai-job" class="ai-job-inp" placeholder="e.g. Frontend Developer">
+        <button class="ai-gen-btn" id="ai-btn" onclick="aiGen()">✨ Generate CV</button>
+      </div>
+    </div>
+    <div class="ai-card">
+      <div class="ai-card-title">📎 Upload Documents <span class="ai-badge">OCR</span></div>
+      <div class="upload-box" onclick="document.getElementById('file-input').click()">
+        <div style="font-size:1.4rem;margin-bottom:6px;">📎</div>
+        <div class="upload-box-title">Drop or click to upload</div>
+        <div class="upload-box-sub">Old CV, certificates, degrees, CNIC — AI extracts everything · PDF · JPG · PNG</div>
+      </div>
+      <div id="f-chips" class="file-chips"></div>
+    </div>
+    <div style="background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:10px 12px;font-size:.72rem;color:var(--t2);line-height:1.6;">
+      💡 <strong>Tip:</strong> AI will fill all sections automatically. You can then edit any field in the Editor tab.
+    </div>
+  </div>`;
 }
 
-// ===== EXTRACT FROM FILES WITH GEMINI =====
-async function extractFromFiles(files) {
-  if (!files.length) return '';
-  let extractedText = '';
+// FILE HANDLING
+window.onFileSelect=function(e){
+  Array.from(e.target.files).forEach(f=>_files.push(f));
+  const fc=document.getElementById('f-chips');
+  if(fc)fc.innerHTML=_files.map((f,i)=>`<div class="f-chip">${f.name.substring(0,22)}<button onclick="_files.splice(${i},1);onFileSelect({target:{files:[]}})">✕</button></div>`).join('');
+};
+async function toB64(f){return new Promise((r,j)=>{const rd=new FileReader();rd.onload=()=>r(rd.result.split(',')[1]);rd.onerror=j;rd.readAsDataURL(f);});}
 
-  for (const file of files) {
-    try {
-      const base64 = await fileToBase64(file);
-      const mimeType = file.type || 'image/jpeg';
-
-      let parts = [];
-
-      if (file.type.includes('image') || file.type.includes('pdf')) {
-        parts = [
-          { text: "Extract ALL text and information from this document. Include: name, contact info, experience, education, skills, certifications. Return raw extracted text, no formatting." },
-          { inline_data: { mime_type: mimeType, data: base64 } }
-        ];
-      } else {
-        // Try text reading
-        parts = [{ text: "Parse this CV/resume and extract all information." }];
-      }
-
-      const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: [{ parts }] })
-      });
-
-      const data = await resp.json();
-      if (data.candidates && data.candidates[0]) {
-        extractedText += '\n' + data.candidates[0].content.parts[0].text;
-      }
-    } catch(e) {
-      console.error('Gemini extraction error:', e);
+// AI GENERATE
+window.aiGen=async function(){
+  const txt=document.getElementById('ai-txt')?.value.trim();
+  const job=document.getElementById('ai-job')?.value.trim();
+  if(!txt&&!_files.length){toast('Add text or upload a document','err');return;}
+  if(!GMK){toast('API key not loaded. Try again.','err');await loadKeys();return;}
+  const btn=document.getElementById('ai-btn');if(btn)btn.disabled=true;
+  showLoad('Reading your documents...');
+  try{
+    let extracted='';
+    for(const f of _files){
+      try{
+        setLoad('Extracting from '+f.name+'...');
+        const b64=await toB64(f);
+        const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GMK}`,{
+          method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({contents:[{parts:[{text:'Extract ALL text and information from this document. Include: name, contact, work experience, education, skills, certifications. Return plain text only.'},{inline_data:{mime_type:f.type||'image/jpeg',data:b64}}]}]})
+        });
+        const d=await r.json();
+        if(d.candidates?.[0])extracted+='\n'+d.candidates[0].content.parts[0].text;
+      }catch(fe){console.error('File extract:',fe);}
     }
-  }
-  return extractedText;
-}
+    setLoad('Gemini AI is writing your CV...');
+    const prompt=`You are an expert CV writer. Parse the input below and output STRICT JSON only. No markdown. No explanation. No code blocks.
 
-// ===== GENERATE CV =====
-window.generateCV = async function() {
-  const inputText = document.getElementById('cv-input').value.trim();
-  const targetJob = document.getElementById('target-job').value.trim();
+INPUT:
+${[txt,extracted].filter(Boolean).join('\n\n---EXTRACTED FROM DOCUMENTS---\n\n')}
+TARGET ROLE: ${job||'not specified'}
 
-  if (!inputText && uploadedFiles.length === 0) {
-    showToast('Please enter some info or upload a document', 'error');
-    return;
-  }
-
-  // Guest limit check
-  if (isGuest) {
-    const guestCVs = JSON.parse(localStorage.getItem('guest_cvs') || '[]');
-    const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
-    const recentCVs = guestCVs.filter(t => t > weekAgo);
-    if (recentCVs.length >= 2) {
-      showToast('Guest limit reached (2/week). Please sign in for unlimited CVs.', 'error');
-      return;
-    }
-  }
-
-  document.getElementById('generate-btn').disabled = true;
-  showLoadingScreen();
-
-  try {
-    // Step 1: Read documents
-    await animateStep(1);
-    let extractedText = '';
-    if (uploadedFiles.length > 0) {
-      extractedText = await extractFromFiles(uploadedFiles);
-    }
-
-    // Step 2: Extract info
-    await animateStep(2, 800);
-
-    // Step 3: Build prompt
-    await animateStep(3, 600);
-
-    const combinedInput = [inputText, extractedText].filter(Boolean).join('\n\n--- EXTRACTED FROM DOCUMENTS ---\n\n');
-
-    const templateHint = selectedTemplate === 'auto' ? '' : `Preferred template: ${selectedTemplate}.`;
-
-    const systemPrompt = `You are MakeCV AI, a world-class resume builder. Parse messy input from ANY user type and build professional CVs.
+OUTPUT (strict JSON, exact structure):
+{"personal":{"name":"","title":"","email":"","phone":"","location":"","linkedin":"","website":"","summary":""},"experience":[{"title":"","company":"","start":"","end":"","bullets":[""]}],"education":[{"degree":"","school":"","year":"","grade":""}],"skills":[{"name":"","category":"Technical","level":"Advanced"}],"languages":[{"lang":"","level":"Fluent"}],"certifications":[{"name":"","issuer":"","year":""}]}
 
 RULES:
-- Never invent data. Only use what is provided.
-- Rewrite bullets to be action-oriented, ATS-friendly (max 20 words each, max 4 bullets per job).
-- Summary: exactly 2-3 lines.
-- If template is "auto", choose the best template based on user type: modern (tech/IT), classic (finance/law/medicine), minimal (design/creative agencies), creative (designers/artists).
-- Mark genuinely missing but critical items with "_suggested": true.
-- Return ONLY valid JSON, no markdown, no explanation.
+1. Never invent data not in the input.
+2. Rewrite bullets: action verbs, ATS-friendly, max 18 words each, max 4 per job.
+3. Summary: 2-3 sentences professional English.
+4. Output ONLY the JSON object, nothing else.`;
 
-TARGET JOB: ${targetJob || 'Not specified'}
-${templateHint}
-
-OUTPUT FORMAT:
-{
-  "detected_user_type": "fresh_graduate|early_career_1_3y|mid_career_4_7y|senior_8y+|career_changer|freelancer|student",
-  "detected_target_role": "",
-  "chosen_template": "modern|classic|minimal|creative",
-  "confidence": 0.90,
-  "ats_score": 75,
-  "ats_improvements": ["Add measurable achievements", "Include more keywords"],
-  "personal_info": {
-    "full_name": "",
-    "email": "",
-    "phone": "",
-    "location": "",
-    "linkedin": "",
-    "website": ""
-  },
-  "summary": "",
-  "experience": [
-    {
-      "job_title": "",
-      "company": "",
-      "duration": "",
-      "bullets": ["", ""],
-      "_suggested": false
-    }
-  ],
-  "education": [
-    {
-      "degree": "",
-      "institution": "",
-      "year": "",
-      "_suggested": false
-    }
-  ],
-  "skills": {
-    "technical": ["", ""],
-    "soft": ["", ""]
-  },
-  "certifications": [],
-  "languages": [],
-  "missing_fields": [],
-  "missing_documents": [
-    { "document": "Experience Letter", "reason": "Required for mid-career roles", "priority": "high" }
-  ]
-}`;
-
-    const groqResp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + GROQ_KEY
-      },
-      body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: combinedInput }
-        ],
-        temperature: 0.3,
-        max_tokens: 2500
-      })
+    const gr=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GMK}`,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.15,maxOutputTokens:3500}})
     });
-
-    const groqData = await groqResp.json();
-    const rawText = groqData.choices[0].message.content;
-
-    // Step 4: ATS
-    await animateStep(4, 500);
-
-    // Parse JSON
-    let cvData;
-    try {
-      const clean = rawText.replace(/```json|```/g, '').trim();
-      cvData = JSON.parse(clean);
-    } catch(e) {
-      // Try to extract JSON from text
-      const match = rawText.match(/\{[\s\S]*\}/);
-      if (match) {
-        cvData = JSON.parse(match[0]);
-      } else {
-        throw new Error('Could not parse CV data');
-      }
-    }
-
-    // Step 5: Template
-    await animateStep(5, 600);
-
-    currentCVData = cvData;
-
-    // Step 6: Finalize
-    await animateStep(6, 800);
-
-    // Mark prev step done
-    const prev = document.getElementById('step-6');
-    if (prev) { prev.classList.remove('active'); prev.classList.add('done'); }
-
-    await sleep(500);
-
-    // Render
-    renderCV(cvData);
-    renderRightPanel(cvData);
-
-    // Save to history
-    await saveToHistory(cvData);
-
-    showResultScreen();
-
-  } catch(e) {
-    console.error(e);
-    showToast('Error generating CV: ' + e.message, 'error');
-    showCreateScreen();
-  }
-
-  document.getElementById('generate-btn').disabled = false;
+    const gd=await gr.json();
+    if(!gd.candidates?.[0])throw new Error(gd.error?.message||'Gemini returned no response');
+    let raw=gd.candidates[0].content.parts[0].text.replace(/```json|```/g,'').trim();
+    const parsed=JSON.parse(raw);
+    if(parsed.personal)Object.assign(cv.personal,parsed.personal);
+    if(parsed.experience?.length)cv.experience=parsed.experience;
+    if(parsed.education?.length)cv.education=parsed.education;
+    if(parsed.skills?.length)cv.skills=parsed.skills;
+    if(parsed.languages?.length)cv.languages=parsed.languages;
+    if(parsed.certifications?.length&&parsed.certifications[0].name)cv.certifications=parsed.certifications;
+    hideLoad();updatePreview();
+    showSection('personal');
+    document.querySelectorAll('.tb-menu-item').forEach(x=>x.classList.remove('active'));
+    document.getElementById('tab-editor').classList.add('active');
+    toast('CV generated! Review in Editor ✅','ok');
+  }catch(e){hideLoad();toast('Error: '+e.message,'err');console.error(e);}
+  if(btn)btn.disabled=false;
 };
 
-// ===== RENDER CV =====
-function renderCV(data) {
-  const template = data.chosen_template || selectedTemplate || 'modern';
-  const area = document.getElementById('cv-render-area');
-  area.innerHTML = '';
-
-  const div = document.createElement('div');
-  div.id = 'cv-document';
-  div.className = 'cv-doc ' + template;
-
-  const pi = data.personal_info || {};
-  const exp = data.experience || [];
-  const edu = data.education || [];
-  const skills = data.skills || {};
-  const allSkills = [...(skills.technical || []), ...(skills.soft || [])];
-  const certs = data.certifications || [];
-  const langs = data.languages || [];
-
-  if (template === 'creative') {
-    div.innerHTML = `
-      <div class="cv-sidebar">
-        <div class="cv-name">${pi.full_name || 'Your Name'}</div>
-        <div class="cv-title">${data.detected_target_role || ''}</div>
-        <div class="cv-sidebar-section">
-          <div class="cv-sidebar-label">Contact</div>
-          <div class="cv-sidebar-value">
-            ${pi.email ? pi.email + '<br>' : ''}
-            ${pi.phone ? pi.phone + '<br>' : ''}
-            ${pi.location ? pi.location : ''}
-          </div>
+// HISTORY PANEL
+function renderHistPanel(){
+  document.getElementById('ed-title').innerHTML='🕐 Saved CVs <span class="ed-badge">CLOUD</span>';
+  const body=document.getElementById('ed-body');
+  body.innerHTML=`<div class="hist-wrap" id="hist-wrap">
+    ${_hist.length?_hist.map(h=>`
+      <div class="h-item">
+        <div onclick="loadHistCV('${h.id}')" style="flex:1;overflow:hidden;cursor:pointer;">
+          <div class="h-nm">${h.nm||'Untitled CV'}</div>
+          <div class="h-dt">${h.role?h.role+' · ':''}${fmtDate(h.ts)}</div>
         </div>
-        ${pi.linkedin ? `<div class="cv-sidebar-section"><div class="cv-sidebar-label">LinkedIn</div><div class="cv-sidebar-value">${pi.linkedin}</div></div>` : ''}
-        ${allSkills.length ? `
-          <div class="cv-sidebar-section">
-            <div class="cv-sidebar-label">Skills</div>
-            <div class="cv-sidebar-value">${allSkills.join(' • ')}</div>
-          </div>` : ''}
-        ${langs.length ? `
-          <div class="cv-sidebar-section">
-            <div class="cv-sidebar-label">Languages</div>
-            <div class="cv-sidebar-value">${langs.join('<br>')}</div>
-          </div>` : ''}
-      </div>
-      <div class="cv-main">
-        ${data.summary ? `
-          <div class="cv-section-title">Profile</div>
-          <div class="cv-summary">${data.summary}</div>` : ''}
-        ${exp.length ? `
-          <div class="cv-section-title">Experience</div>
-          ${exp.map(j => `
-            <div class="cv-job">
-              <div class="cv-job-header">
-                <div>
-                  <div class="cv-job-title">${j.job_title || ''}${j._suggested ? '<span class="suggested-tag">AI</span>' : ''}</div>
-                  <div class="cv-job-company">${j.company || ''}</div>
-                </div>
-                <div class="cv-job-date">${j.duration || ''}</div>
-              </div>
-              ${j.bullets && j.bullets.length ? `<ul class="cv-bullets">${j.bullets.map(b => '<li>' + b + '</li>').join('')}</ul>` : ''}
-            </div>`).join('')}` : ''}
-        ${edu.length ? `
-          <div class="cv-section-title">Education</div>
-          ${edu.map(e => `
-            <div class="cv-edu">
-              <div class="cv-edu-degree">${e.degree || ''}${e._suggested ? '<span class="suggested-tag">AI</span>' : ''}</div>
-              <div class="cv-edu-school">${e.institution || ''}</div>
-              <div class="cv-edu-year">${e.year || ''}</div>
-            </div>`).join('')}` : ''}
-        ${certs.length ? `
-          <div class="cv-section-title">Certifications</div>
-          <div style="font-size:8.5pt;line-height:1.8;">${certs.join(' • ')}</div>` : ''}
-      </div>`;
-  } else {
-    // Modern / Classic / Minimal
-    let headerHTML = '';
-    if (template === 'modern') {
-      headerHTML = `<div class="cv-header">
-        <div class="cv-name">${pi.full_name || 'Your Name'}</div>
-        <div class="cv-title">${data.detected_target_role || ''}</div>
-        <div class="cv-contacts">
-          ${pi.email ? '<span>✉ ' + pi.email + '</span>' : ''}
-          ${pi.phone ? '<span>📱 ' + pi.phone + '</span>' : ''}
-          ${pi.location ? '<span>📍 ' + pi.location + '</span>' : ''}
-          ${pi.linkedin ? '<span>🔗 ' + pi.linkedin + '</span>' : ''}
-        </div>
-      </div>`;
-    } else if (template === 'classic') {
-      headerHTML = `<div class="cv-header">
-        <div class="cv-name">${pi.full_name || 'Your Name'}</div>
-        <div class="cv-title">${data.detected_target_role || ''}</div>
-        <div class="cv-contacts">
-          ${pi.email ? '<span>' + pi.email + '</span>' : ''}
-          ${pi.phone ? '<span>' + pi.phone + '</span>' : ''}
-          ${pi.location ? '<span>' + pi.location + '</span>' : ''}
-          ${pi.linkedin ? '<span>' + pi.linkedin + '</span>' : ''}
-        </div>
-      </div>`;
-    } else {
-      headerHTML = `
-        <div class="cv-name">${pi.full_name || 'Your Name'}</div>
-        <div class="cv-title">${data.detected_target_role || ''}</div>
-        <div class="cv-contacts">
-          ${pi.email ? '<span>' + pi.email + '</span>' : ''}
-          ${pi.phone ? '<span>' + pi.phone + '</span>' : ''}
-          ${pi.location ? '<span>' + pi.location + '</span>' : ''}
-          ${pi.linkedin ? '<span>' + pi.linkedin + '</span>' : ''}
-        </div>`;
-    }
-
-    div.innerHTML = headerHTML + `
-      ${data.summary ? `
-        <div class="cv-section-title">Professional Summary</div>
-        <div class="cv-summary">${data.summary}</div>` : ''}
-      ${exp.length ? `
-        <div class="cv-section-title">Work Experience</div>
-        ${exp.map(j => `
-          <div class="cv-job">
-            <div class="cv-job-header">
-              <div>
-                <div class="cv-job-title">${j.job_title || ''}${j._suggested ? '<span class="suggested-tag">AI Suggested</span>' : ''}</div>
-                <div class="cv-job-company">${j.company || ''}</div>
-              </div>
-              <div class="cv-job-date">${j.duration || ''}</div>
-            </div>
-            ${j.bullets && j.bullets.length ? `<ul class="cv-bullets">${j.bullets.map(b => '<li>' + b + '</li>').join('')}</ul>` : ''}
-          </div>`).join('')}` : ''}
-      ${edu.length ? `
-        <div class="cv-section-title">Education</div>
-        ${edu.map(e => `
-          <div class="cv-edu">
-            <div class="cv-job-header">
-              <div>
-                <div class="cv-edu-degree">${e.degree || ''}${e._suggested ? '<span class="suggested-tag">AI</span>' : ''}</div>
-                <div class="cv-edu-school">${e.institution || ''}</div>
-              </div>
-              <div class="cv-job-date">${e.year || ''}</div>
-            </div>
-          </div>`).join('')}` : ''}
-      ${allSkills.length ? `
-        <div class="cv-section-title">Skills</div>
-        <div class="cv-skills-grid">${allSkills.map(s => '<span class="cv-skill-tag">' + s + '</span>').join('')}</div>` : ''}
-      ${certs.length ? `
-        <div class="cv-section-title">Certifications</div>
-        <div class="cv-skills-grid">${certs.map(c => '<span class="cv-skill-tag">' + c + '</span>').join('')}</div>` : ''}
-      ${langs.length ? `
-        <div class="cv-section-title">Languages</div>
-        <div class="cv-skills-grid">${langs.map(l => '<span class="cv-skill-tag">' + l + '</span>').join('')}</div>` : ''}
-    `;
-  }
-
-  area.appendChild(div);
-
-  // Scale to fit
-  scaleCV();
-
-  // Fill quick edit
-  document.getElementById('edit-name').value = pi.full_name || '';
-  document.getElementById('edit-title').value = data.detected_target_role || '';
-  document.getElementById('edit-email').value = pi.email || '';
-  document.getElementById('edit-phone').value = pi.phone || '';
+        <button class="h-del" onclick="openDel('${h.id}')">🗑</button>
+      </div>`).join(''):'<div style="color:var(--t3);font-size:.75rem;padding:12px;">No saved CVs yet.</div>'}
+  </div>`;
 }
 
-function scaleCV() {
-  const area = document.getElementById('cv-render-area');
-  const doc = document.getElementById('cv-document');
-  if (!doc) return;
-  const containerW = area.clientWidth || 600;
-  const scale = Math.min(1, containerW / 794);
-  doc.style.transform = 'scale(' + scale + ')';
-  doc.style.transformOrigin = 'top left';
-  area.style.height = (1123 * scale) + 'px';
-}
-
-window.addEventListener('resize', scaleCV);
-
-// ===== RIGHT PANEL =====
-function renderRightPanel(data) {
-  // ATS Score
-  const score = data.ats_score || 70;
-  document.getElementById('ats-circle').style.setProperty('--score', score);
-  document.getElementById('ats-number').textContent = score;
-  document.getElementById('ats-label').textContent = score >= 80 ? 'Excellent!' : score >= 65 ? 'Good' : 'Needs Work';
-
-  const improvements = data.ats_improvements || [];
-  document.getElementById('ats-improvements').innerHTML = improvements.map(i => `
-    <div class="improvement-item">
-      <div class="improvement-dot"></div>
-      ${i}
-    </div>`).join('');
-
-  // Missing Docs
-  const missingDocs = data.missing_documents || [];
-  const missingFields = data.missing_fields || [];
-  const docsList = document.getElementById('missing-docs-list');
-
-  if (!missingDocs.length && !missingFields.length) {
-    docsList.innerHTML = '<div style="color:var(--success);font-size:0.78rem;">✅ Profile looks complete!</div>';
-    return;
-  }
-
-  docsList.innerHTML = missingDocs.map(d => `
-    <div class="missing-doc-item">
-      <div class="missing-doc-icon">📋</div>
-      <div class="missing-doc-label">
-        <strong>${d.document}</strong><br>
-        <span style="color:var(--text3);font-size:0.7rem;">${d.reason || ''}</span>
-      </div>
-      <div class="missing-doc-priority ${d.priority === 'high' ? 'high' : 'med'}">${d.priority === 'high' ? 'Must' : 'Helpful'}</div>
-    </div>`).join('') +
-    missingFields.map(f => `
-    <div class="missing-doc-item">
-      <div class="missing-doc-icon">⚠️</div>
-      <div class="missing-doc-label">${f}</div>
-      <div class="missing-doc-priority med">Add</div>
-    </div>`).join('');
-}
-
-// ===== QUICK EDIT =====
-window.applyQuickEdit = function() {
-  if (!currentCVData) return;
-  currentCVData.personal_info.full_name = document.getElementById('edit-name').value;
-  currentCVData.detected_target_role = document.getElementById('edit-title').value;
-  currentCVData.personal_info.email = document.getElementById('edit-email').value;
-  currentCVData.personal_info.phone = document.getElementById('edit-phone').value;
-  renderCV(currentCVData);
-  showToast('CV updated!', 'success');
+// TEMPLATE
+window.setTpl=function(t,el){
+  tpl=t;
+  document.querySelectorAll('.tpl-chip').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');updatePreview();
 };
 
-// ===== PDF DOWNLOAD =====
-window.downloadPDF = async function() {
-  const doc = document.getElementById('cv-document');
-  if (!doc) return;
-  showToast('Generating PDF...', '');
-
-  try {
-    // Reset scale for capture
-    doc.style.transform = 'scale(1)';
-    doc.style.transformOrigin = 'top left';
-
-    const canvas = await html2canvas(doc, {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: doc.className.includes('creative') ? '#0f1923' : '#ffffff'
-    });
-
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const imgData = canvas.toDataURL('image/png');
-    const pdfW = pdf.internal.pageSize.getWidth();
-    const pdfH = (canvas.height * pdfW) / canvas.width;
-
-    pdf.addImage(imgData, 'PNG', 0, 0, pdfW, pdfH);
-    const name = currentCVData?.personal_info?.full_name || 'CV';
-    pdf.save(name.replace(/\s+/g, '_') + '_CV.pdf');
-
-    scaleCV();
-    showToast('PDF downloaded!', 'success');
-  } catch(e) {
-    scaleCV();
-    showToast('PDF error: ' + e.message, 'error');
-  }
-};
-
-window.printCV = function() {
-  const doc = document.getElementById('cv-document');
-  if (!doc) return;
-  doc.style.transform = 'scale(1)';
-  window.print();
-  setTimeout(scaleCV, 1000);
-};
-
-// ===== HISTORY =====
-async function saveToHistory(cvData) {
-  const name = cvData.personal_info?.full_name || 'Untitled CV';
-  const role = cvData.detected_target_role || '';
-  const timestamp = Date.now();
-
-  if (isGuest) {
-    const guestCVs = JSON.parse(localStorage.getItem('guest_cvs') || '[]');
-    guestCVs.push(timestamp);
-    localStorage.setItem('guest_cvs', JSON.stringify(guestCVs));
-
-    const guestHistory = JSON.parse(localStorage.getItem('guest_history') || '[]');
-    const entry = { id: 'g_' + timestamp, name, role, timestamp, cvData };
-    guestHistory.unshift(entry);
-    localStorage.setItem('guest_history', JSON.stringify(guestHistory.slice(0, 10)));
-    loadHistory();
-    return;
-  }
-
-  try {
-    await window._addDoc(window._collection(window._db, 'cvs'), {
-      userId: currentUser.uid,
-      name, role, timestamp,
-      cvData: JSON.stringify(cvData)
-    });
-    loadHistory();
-  } catch(e) {
-    console.error('Save error:', e);
-  }
-}
-
-async function loadHistory() {
-  if (isGuest) {
-    const guestHistory = JSON.parse(localStorage.getItem('guest_history') || '[]');
-    cvHistory = guestHistory;
-    renderHistory();
-    return;
-  }
-
-  try {
-    const q = window._query(
-      window._collection(window._db, 'cvs'),
-      window._where('userId', '==', currentUser.uid),
-      window._orderBy('timestamp', 'desc')
-    );
-    const snap = await window._getDocs(q);
-    cvHistory = [];
-    snap.forEach(d => {
-      cvHistory.push({ id: d.id, ...d.data(), cvData: JSON.parse(d.data().cvData) });
-    });
-    renderHistory();
-  } catch(e) {
-    console.error('Load history error:', e);
-  }
-}
-
-function renderHistory() {
-  const list = document.getElementById('history-list');
-  if (!cvHistory.length) {
-    list.innerHTML = '<div style="color:var(--text3);font-size:0.78rem;padding:8px;">No CVs yet. Create your first!</div>';
-    return;
-  }
-  list.innerHTML = cvHistory.map(cv => `
-    <div class="history-item" onclick="loadCV('${cv.id}')">
-      <div class="history-item-info">
-        <div class="history-item-name">${cv.name}</div>
-        <div class="history-item-date">${cv.role ? cv.role + ' · ' : ''}${formatDate(cv.timestamp)}</div>
+// LIVE PREVIEW
+function updatePreview(){
+  const doc=document.getElementById('cv-doc');if(!doc)return;
+  doc.className='cv-doc '+tpl;
+  const p=cv.personal;
+  const ph=cv.photo?`<img class="cv-photo" src="${cv.photo}">`:`<div class="cv-photo-ph">👤</div>`;
+  const cts=[p.email?`✉ ${p.email}`:'',p.phone?`📱 ${p.phone}`:'',p.location?`📍 ${p.location}`:'',p.linkedin?`🔗 ${p.linkedin}`:''].filter(Boolean).map(c=>`<span>${c}</span>`).join('');
+  const expH=cv.experience.filter(e=>e.title||e.company).map(e=>`
+    <div class="cv-job">
+      <div class="j-hdr">
+        <div class="j-left"><div class="j-t">${e.title||''}</div><div class="j-c">${e.company||''}</div></div>
+        <div class="j-d">${[e.start,e.end].filter(Boolean).join(' – ')}</div>
       </div>
-      <div class="history-item-actions">
-        <button class="icon-btn delete" onclick="event.stopPropagation();showDeleteModal('${cv.id}')">🗑</button>
+      ${(e.bullets||[]).filter(b=>b&&b.trim()).length?`<ul class="j-buls">${(e.bullets||[]).filter(b=>b&&b.trim()).map(b=>`<li>${b.replace(/^[•\-]\s*/,'')}</li>`).join('')}</ul>`:''}</div>`).join('');
+  const eduH=cv.education.filter(e=>e.degree||e.school).map(e=>`
+    <div class="cv-edu">
+      <div class="j-hdr">
+        <div><div class="edu-d">${e.degree||''}</div><div class="edu-s">${e.school||''}</div></div>
+        <div style="text-align:right"><div class="edu-y">${e.year||''}</div>${e.grade?`<div class="edu-y">${e.grade}</div>`:''}</div>
       </div>
     </div>`).join('');
-}
-
-function formatDate(ts) {
-  const d = new Date(ts);
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-}
-
-window.loadCV = function(id) {
-  const cv = cvHistory.find(c => c.id === id);
-  if (!cv) return;
-  currentCVData = cv.cvData;
-  renderCV(cv.cvData);
-  renderRightPanel(cv.cvData);
-  showResultScreen();
-  closeSidebar();
-};
-
-window.showDeleteModal = function(id) {
-  deleteTargetId = id;
-  document.getElementById('delete-modal').classList.add('active');
-};
-
-window.confirmDelete = async function() {
-  if (!deleteTargetId) return;
-
-  if (isGuest) {
-    const guestHistory = JSON.parse(localStorage.getItem('guest_history') || '[]');
-    const updated = guestHistory.filter(c => c.id !== deleteTargetId);
-    localStorage.setItem('guest_history', JSON.stringify(updated));
-    cvHistory = updated;
-  } else {
-    try {
-      await window._deleteDoc(window._doc(window._db, 'cvs', deleteTargetId));
-      cvHistory = cvHistory.filter(c => c.id !== deleteTargetId);
-    } catch(e) {
-      showToast('Delete error', 'error');
-    }
+  const skH=cv.skills.filter(s=>typeof s==='object'?s.name:s).map(s=>`<span class="sk-t">${typeof s==='object'?s.name:s}</span>`).join('');
+  const lgH=cv.languages.filter(l=>l.lang).map(l=>`<div class="lang-row">🌐 ${l.lang} — ${l.level}</div>`).join('');
+  const ctH=cv.certifications.filter(c=>c.name).map(c=>`<span class="sk-t">🏆 ${c.name}${c.issuer?' · '+c.issuer:''}${c.year?' ('+c.year+')':''}</span>`).join('');
+  const secs=(sumH,expH,eduH,skH,lgH,ctH)=>`
+    ${sumH?`<div class="sec-t">Summary</div><div class="cv-sum">${sumH}</div>`:''}
+    ${expH?`<div class="sec-t">Experience</div>${expH}`:''}
+    ${eduH?`<div class="sec-t">Education</div>${eduH}`:''}
+    ${skH?`<div class="sec-t">Skills</div><div class="sk-wrap">${skH}</div>`:''}
+    ${lgH?`<div class="sec-t">Languages</div>${lgH}`:''}
+    ${ctH?`<div class="sec-t">Certifications</div><div class="sk-wrap">${ctH}</div>`:''}`;
+  if(tpl==='modern'){
+    doc.innerHTML=`<div class="cv-hdr">${ph}<div><div class="cv-nm">${p.name||'Your Name'}</div><div class="cv-role">${p.title||'Professional Title'}</div><div class="cv-contacts">${cts}</div></div></div><div class="cv-body">${secs(p.summary,expH,eduH,skH,lgH,ctH)}</div>`;
+  }else if(tpl==='classic'){
+    doc.innerHTML=`<div class="cv-hdr"><div class="cv-hdr-top">${ph}<div style="text-align:center"><div class="cv-nm">${p.name||'Your Name'}</div><div class="cv-role">${p.title||'Professional Title'}</div><div class="cv-contacts">${cts}</div></div></div></div>${secs(p.summary,expH,eduH,skH,lgH,ctH)}`;
+  }else if(tpl==='minimal'){
+    doc.innerHTML=`<div class="cv-hdr"><div class="cv-hdr-top">${ph}<div><div class="cv-nm">${p.name||'Your Name'}</div><div class="cv-role">${p.title||''}</div></div></div><div class="cv-contacts">${cts}</div></div>${secs(p.summary,expH,eduH,skH,lgH,ctH)}`;
+  }else{
+    doc.innerHTML=`<div class="cv-hdr">${ph}<div><div class="cv-nm">${p.name||'Your Name'}</div><div class="cv-role">${p.title||'Professional Title'}</div><div class="cv-contacts">${cts}</div></div></div><div class="cv-body">${secs(p.summary,expH,eduH,skH,lgH,ctH)}</div>`;
   }
-
-  renderHistory();
-  closeModal('delete-modal');
-  showToast('CV deleted', '');
-  deleteTargetId = null;
-};
-
-window.closeModal = function(id) {
-  document.getElementById(id).classList.remove('active');
-};
-
-// ===== TOAST =====
-function showToast(msg, type = '') {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'show' + (type ? ' ' + type : '');
-  setTimeout(() => { t.className = ''; }, 3000);
+  scalePreview();
 }
 
-// ===== INIT =====
-// Check if user was previously authenticated
-setTimeout(() => {
-  if (!currentUser && !isGuest && !window._currentUser) {
-    // Already handled by onAuthStateChanged
+function scalePreview(){
+  const wrap=document.getElementById('pv-body');
+  const scale=document.getElementById('cv-scale');
+  if(!wrap||!scale)return;
+  const w=wrap.clientWidth-20;
+  const s=Math.min(1,w/794);
+  scale.style.transform=`scale(${s})`;
+  scale.style.transformOrigin='top left';
+  wrap.style.minHeight=(1123*s+20)+'px';
+}
+window.addEventListener('resize',scalePreview);
+
+// PDF
+window.dlPDF=async function(){
+  const doc=document.getElementById('cv-doc');if(!doc)return;
+  toast('Generating PDF...');
+  const sc=document.getElementById('cv-scale');
+  const prev=sc.style.transform;
+  sc.style.transform='scale(1)';sc.style.transformOrigin='top left';
+  try{
+    const canvas=await html2canvas(doc,{scale:2,useCORS:true,backgroundColor:tpl==='modern'||tpl==='executive'?'#1a1a2e':'#fff'});
+    const{jsPDF}=window.jspdf;
+    const pdf=new jsPDF('p','mm','a4');
+    const img=canvas.toDataURL('image/png');
+    const pw=pdf.internal.pageSize.getWidth();
+    pdf.addImage(img,'PNG',0,0,pw,(canvas.height*pw)/canvas.width);
+    pdf.save((cv.personal.name||'CV').replace(/\s+/g,'_')+'_CV.pdf');
+    toast('PDF downloaded ✅','ok');
+  }catch(e){toast('PDF error','err');}
+  sc.style.transform=prev;scalePreview();
+};
+
+// SAVE/LOAD
+window.saveCV=async function(){
+  const nm=cv.personal.name||'Untitled CV';
+  const role=cv.personal.title||'';
+  const ts=Date.now();
+  const payload=JSON.stringify(cv);
+  if(_guest){
+    const h=JSON.parse(localStorage.getItem('g_hist')||'[]');
+    h.unshift({id:'g_'+ts,nm,role,ts,cv:payload});
+    localStorage.setItem('g_hist',JSON.stringify(h.slice(0,10)));
+    _hist=h;toast('Saved locally ✅','ok');return;
   }
-}, 2000);
+  try{await window._add(window._col(window._D,'cvs'),{userId:_user.uid,nm,role,ts,cv:payload});toast('Saved ✅','ok');loadHist();}
+  catch(e){toast('Save error','err');}
+};
+async function loadHist(){
+  if(_guest){_hist=JSON.parse(localStorage.getItem('g_hist')||'[]');return;}
+  try{
+    const q=window._q(window._col(window._D,'cvs'),window._wh('userId','==',_user.uid),window._ob('ts','desc'));
+    const sn=await window._get(q);_hist=[];
+    sn.forEach(d=>_hist.push({id:d.id,...d.data()}));
+  }catch(e){console.error(e);}
+}
+window.loadHistCV=function(id){
+  const h=_hist.find(x=>x.id===id);if(!h)return;
+  try{Object.assign(cv,JSON.parse(h.cv||'{}'));updatePreview();showSection('personal');document.querySelectorAll('.tb-menu-item').forEach(x=>x.classList.remove('active'));document.getElementById('tab-editor').classList.add('active');toast('CV loaded ✅','ok');}
+  catch(e){toast('Load error','err');}
+};
+window.openDel=function(id){_delId=id;document.getElementById('del-modal').classList.add('on');};
+window.closeModal=function(){document.getElementById('del-modal').classList.remove('on');};
+window.doDelete=async function(){
+  if(!_delId)return;
+  if(_guest){const h=JSON.parse(localStorage.getItem('g_hist')||'[]').filter(x=>x.id!==_delId);localStorage.setItem('g_hist',JSON.stringify(h));_hist=h;}
+  else{try{await window._del(window._dref(window._D,'cvs',_delId));_hist=_hist.filter(x=>x.id!==_delId);}catch(e){}}
+  closeModal();toast('Deleted','');_delId=null;
+  renderHistPanel();
+};
+
+// UTILS
+function showLoad(t){document.getElementById('load-overlay').classList.add('on');setLoad(t);}
+function setLoad(t){document.getElementById('load-txt').textContent=t;}
+function hideLoad(){document.getElementById('load-overlay').classList.remove('on');}
+function toast(m,t=''){const el=document.getElementById('toast');el.textContent=m;el.className='on'+(t?' '+t:'');clearTimeout(el._t);el._t=setTimeout(()=>el.className='',3000);}
+function fmtDate(ts){return new Date(ts).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
-
 </body>
 </html>
